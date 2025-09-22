@@ -1,6 +1,6 @@
 import Dropdown from "../react/Dropdown";
 import "./global_menu.css";
-import { useStaticTooltip, useStaticTooltipWithKeyboardShortcut, useTriliumOption, useTriliumOptionBool } from "../react/hooks";
+import { useStaticTooltip, useStaticTooltipWithKeyboardShortcut, useTriliumOption, useTriliumOptionBool, useTriliumOptionInt } from "../react/hooks";
 import { useContext, useEffect, useRef, useState } from "preact/hooks";
 import { t } from "../../services/i18n";
 import { FormDropdownDivider, FormDropdownSubmenu, FormListItem } from "../react/FormList";
@@ -142,30 +142,23 @@ function VerticalLayoutIcon() {
 }
 
 function ZoomControls({ parentComponent }: { parentComponent?: Component | null }) {
-    const [ zoomLevel, setZoomLevel ] = useState(100);
+    const [ zoomLevel ] = useTriliumOption("zoomFactor");
 
-    function updateZoomState() {
-        if (!isElectron()) {
-            return;
-        }
-
-        const zoomFactor = dynamicRequire("electron").webFrame.getZoomFactor();
-        setZoomLevel(Math.round(zoomFactor * 100));
-    }
-
-    useEffect(updateZoomState, []);
-
-    function ZoomControlButton({ command, title, icon, children }: { command: KeyboardActionNames, title: string, icon?: string, children?: ComponentChildren }) {
+    function ZoomControlButton({ command, title, icon, children, dismiss }: { command: KeyboardActionNames, title: string, icon?: string, children?: ComponentChildren, dismiss?: boolean }) {
         const linkRef = useRef<HTMLAnchorElement>(null);
-        useStaticTooltipWithKeyboardShortcut(linkRef, title, command);
+        useStaticTooltipWithKeyboardShortcut(linkRef, title, command, {
+            placement: "bottom",
+            fallbackPlacements: [ "bottom" ]
+        });
         return (
             <a
                 ref={linkRef}
                 tabIndex={0}
                 onClick={(e) => {
                     parentComponent?.triggerCommand(command);
-                    setTimeout(() => updateZoomState(), 300)
-                    e.stopPropagation();
+                    if (!dismiss) {
+                        e.stopPropagation();
+                    }
                 }}
                 className={`dropdown-item-button ${icon}`}
             >{children}</a>
@@ -177,14 +170,15 @@ function ZoomControls({ parentComponent }: { parentComponent?: Component | null 
             icon="bx bx-empty"
             container
             className="zoom-container"
+            onClick={(e) => e.stopPropagation()}
         >
             {t("global_menu.zoom")}
             <>
                 <div className="zoom-buttons">
-                    <ZoomControlButton command="toggleFullscreen" title={t("global_menu.toggle_fullscreen")} icon="bx bx-expand-alt" />
+                    <ZoomControlButton command="toggleFullscreen" title={t("global_menu.toggle_fullscreen")} icon="bx bx-expand-alt" dismiss />
                     &nbsp;
                     <ZoomControlButton command="zoomOut" title={t("global_menu.zoom_out")} icon="bx bx-minus" />
-                    <ZoomControlButton command="zoomReset" title={t("global_menu.reset_zoom_level")}>{zoomLevel}{t("units.percentage")}</ZoomControlButton>
+                    <ZoomControlButton command="zoomReset" title={t("global_menu.reset_zoom_level")}>{(parseFloat(zoomLevel) * 100).toFixed(0)}{t("units.percentage")}</ZoomControlButton>
                     <ZoomControlButton command="zoomIn" title={t("global_menu.zoom_in")} icon="bx bx-plus" />
                 </div>
             </>

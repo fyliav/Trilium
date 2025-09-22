@@ -37,7 +37,7 @@ function setupContextMenu() {
                 handler: () => webContents.session.addWordToSpellCheckerDictionary(params.misspelledWord)
             });
 
-            items.push({ title: `----` });
+            items.push({ kind: "separator" });
         }
 
         if (params.isEditable) {

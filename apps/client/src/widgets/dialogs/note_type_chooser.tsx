@@ -28,8 +28,8 @@ const SEPARATOR_TITLE_REPLACEMENTS = [
 export default function NoteTypeChooserDialogComponent() {
     const [ callback, setCallback ] = useState<ChooseNoteTypeCallback>();
     const [ shown, setShown ] = useState(false);
-    const [ parentNote, setParentNote ] = useState<Suggestion | null>(); 
-    const [ noteTypes, setNoteTypes ] = useState<MenuItem<TreeCommandNames>[]>([]);    
+    const [ parentNote, setParentNote ] = useState<Suggestion | null>();
+    const [ noteTypes, setNoteTypes ] = useState<MenuItem<TreeCommandNames>[]>([]);
 
     useTriliumEvent("chooseNoteType", ({ callback }) => {
         setCallback(() => callback);
@@ -37,7 +37,6 @@ export default function NoteTypeChooserDialogComponent() {
     });
 
     useEffect(() => {
-        console.log(noteTypes);
         note_types.getNoteTypeItems().then(noteTypes => {
             let index = -1;
 
@@ -57,7 +56,7 @@ export default function NoteTypeChooserDialogComponent() {
 
     function onNoteTypeSelected(value: string) {
         const [ noteType, templateNoteId ] = value.split(",");
-        
+
         callback?.({
             success: true,
             noteType,
@@ -96,8 +95,8 @@ export default function NoteTypeChooserDialogComponent() {
             <FormGroup name="note-type" label={t("note_type_chooser.modal_body")}>
                 <FormList onSelect={onNoteTypeSelected}>
                     {noteTypes.map((_item) => {
-                        if ("kind" in _item && _item.kind === "separator") {     
-                            return;                       
+                        if ("kind" in _item && _item.kind === "separator") {
+                            return;
                         }
 
                         const item = _item as MenuCommandItem<TreeCommandNames>;
@@ -110,7 +109,7 @@ export default function NoteTypeChooserDialogComponent() {
                                 icon={item.uiIcon}>
                                 {item.title}
                                 {item.badges && item.badges.map((badge) => <Badge {...badge} />)}
-                            </FormListItem>;                            
+                            </FormListItem>;
                         }
                     })}
                 </FormList>

@@ -1321,6 +1321,11 @@ body.desktop li.dropdown-submenu:hover > ul.dropdown-menu {
     overflow: auto;
 }
 
+.dropdown-submenu.dropstart > .dropdown-menu {
+    inset-inline-start: auto;
+    inset-inline-end: calc(100% - 2px);
+}
+
 body:not(.mobile) #launcher-pane.horizontal .dropdown-submenu > .dropdown-menu {
     inset-inline-start: calc(-100% + 10px);
 }

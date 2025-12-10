@@ -22,7 +22,7 @@ export const RIBBON_TAB_DEFINITIONS: TabConfiguration[] = [
     {
         title: t("classic_editor_toolbar.title"),
         icon: "bx bx-text",
-        show: async ({ note, noteContext }) => note?.type === "text"
+        show: async ({ note, noteContext }) => note?.type === "text" && noteContext?.viewScope?.viewMode === "default"
             && options.get("textNoteEditorType") === "ckeditor-classic"
             && !(await noteContext?.isReadOnly()),
         toggleCommand: "toggleRibbonTabClassicEditor",

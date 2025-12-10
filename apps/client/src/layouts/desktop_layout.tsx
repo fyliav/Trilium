@@ -140,7 +140,7 @@ export default class DesktopLayout {
                                                                 .class("breadcrumb-row")
                                                                 .cssBlock(".breadcrumb-row > * { margin: 5px; }")
                                                                 .child(<Breadcrumb />)
-                                                                .child(<BreadcrumbBadges />)
+                                                                .optChild(isNewLayout, <BreadcrumbBadges />)
                                                                 .child(<SpacerWidget baseSize={0} growthFactor={1} />)
                                                                 .child(<MovePaneButton direction="left" />)
                                                                 .child(<MovePaneButton direction="right" />)

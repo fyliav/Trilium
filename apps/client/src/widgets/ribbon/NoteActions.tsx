@@ -13,7 +13,7 @@ import { isElectron as getIsElectron, isMac as getIsMac } from "../../services/u
 import ws from "../../services/ws";
 import ActionButton from "../react/ActionButton";
 import Dropdown from "../react/Dropdown";
-import { FormDropdownDivider, FormListHeader, FormListItem } from "../react/FormList";
+import { FormDropdownDivider, FormDropdownSubmenu, FormListItem } from "../react/FormList";
 import { useIsNoteReadOnly, useNoteContext, useNoteLabel, useNoteProperty, useTriliumOption } from "../react/hooks";
 import { ParentComponent } from "../react/react_utils";
 import { isExperimentalFeatureEnabled } from "../../services/experimental_features";
@@ -98,7 +98,7 @@ function NoteContextMenu({ note, noteContext }: { note: FNote, noteContext?: Not
             }
             <FormDropdownDivider />
 
-            <CommandItem command="showRevisions" icon="bx bx-history" text={t("revisions_button.note_revisions")} />
+            <CommandItem command="showRevisions" icon="bx bx-history" text={t("note_actions.view_revisions")} />
             <CommandItem command="forceSaveRevision" icon="bx bx-save" disabled={isInOptionsOrHelp} text={t("note_actions.save_revision")} />
             <CommandItem icon="bx bx-trash destructive-action-icon" text={t("note_actions.delete_note")} destructive
                 disabled={isInOptionsOrHelp}
@@ -114,23 +114,22 @@ function NoteContextMenu({ note, noteContext }: { note: FNote, noteContext?: Not
 
 function DevelopmentActions({ note, noteContext }: { note: FNote, noteContext?: NoteContext }) {
     return (
-        <>
-            <FormListHeader text="Development-only Actions" />
+        <FormDropdownSubmenu title="Development Actions" icon="bx bx-wrench" dropStart>
             <FormListItem
                 icon="bx bx-printer"
                 onClick={() => window.open(`/?print=#root/${note.noteId}`, "_blank")}
             >Open print page</FormListItem>
-            {note.type === "text" && (
-                <FormListItem
-                    icon="bx bx-error"
-                    onClick={() => {
-                        noteContext?.getTextEditor(editor => {
-                            editor.editing.view.change(() => {
-                                throw new Error("Editor crashed.");
-                            });
+            <FormListItem
+                icon="bx bx-error"
+                disabled={note.type !== "text"}
+                onClick={() => {
+                    noteContext?.getTextEditor(editor => {
+                        editor.editing.view.change(() => {
+                            throw new Error("Editor crashed.");
                         });
-                    }}>Crash editor</FormListItem>)}
-        </>
+                    });
+                }}>Crash editor</FormListItem>
+        </FormDropdownSubmenu>
     );
 }
 

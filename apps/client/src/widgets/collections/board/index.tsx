@@ -243,7 +243,7 @@ function AddNewColumn({ api, isInRelationMode }: { api: BoardApi, isInRelationMo
 export function TitleEditor({ currentValue, placeholder, save, dismiss, mode, isNewItem }: {
     currentValue?: string;
     placeholder?: string;
-    save: (newValue: string) => void;
+    save: (newValue: string) => void | Promise<void>;
     dismiss: () => void;
     isNewItem?: boolean;
     mode?: "normal" | "multiline" | "relation";

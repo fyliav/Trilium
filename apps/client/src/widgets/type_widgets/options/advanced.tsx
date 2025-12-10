@@ -158,7 +158,7 @@ function ExistingAnonymizedDatabases({ databases }: { databases: AnonymizedDbRes
                 ))}
             </tbody>
         </table>
-    )
+    );
 }
 
 function VacuumDatabaseOptions() {
@@ -175,11 +175,11 @@ function VacuumDatabaseOptions() {
                 }}
             />
         </OptionsSection>
-    )
+    );
 }
 
 function ExperimentalOptions() {
-    const [ enabledExperimentalFeatures, setEnabledExperimentalFeatures ] = useTriliumOptionJson<string[]>("experimentalFeatures");
+    const [ enabledExperimentalFeatures, setEnabledExperimentalFeatures ] = useTriliumOptionJson<string[]>("experimentalFeatures", true);
 
     return (
         <OptionsSection title={t("experimental_features.title")}>

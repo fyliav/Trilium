@@ -1,17 +1,22 @@
 import "./BreadcrumbBadges.css";
 
-import { ComponentChildren } from "preact";
-import { useIsNoteReadOnly, useNoteContext } from "./react/hooks";
+import clsx from "clsx";
+import { ComponentChildren, MouseEventHandler } from "preact";
+import { useRef } from "preact/hooks";
+
+import { t } from "../services/i18n";
+import { BacklinksList, useBacklinkCount } from "./FloatingButtonsDefinitions";
+import Dropdown, { DropdownProps } from "./react/Dropdown";
+import { useIsNoteReadOnly, useNoteContext, useStaticTooltip } from "./react/hooks";
 import Icon from "./react/Icon";
 import { useShareInfo } from "./shared_info";
-import clsx from "clsx";
-import { t } from "../services/i18n";
 
 export default function BreadcrumbBadges() {
     return (
         <div className="breadcrumb-badges">
             <ReadOnlyBadge />
             <ShareBadge />
+            <BacklinksBadge />
         </div>
     );
 }
@@ -20,37 +25,113 @@ function ReadOnlyBadge() {
     const { note, noteContext } = useNoteContext();
     const { isReadOnly, enableEditing } = useIsNoteReadOnly(note, noteContext);
     const isExplicitReadOnly = note?.isLabelTruthy("readOnly");
+    const isTemporarilyEditable = noteContext?.viewScope?.readOnlyTemporarilyDisabled;
 
-    return (isReadOnly &&
-        <Badge
-            icon="bx bx-lock"
-            onClick={() => enableEditing()}>
-            {isExplicitReadOnly ? t("breadcrumb_badges.read_only_explicit") : t("breadcrumb_badges.read_only_auto")}
-        </Badge>
-    );
+    if (isTemporarilyEditable) {
+        return <Badge
+            icon="bx bx-lock-open-alt"
+            text={t("breadcrumb_badges.read_only_temporarily_disabled")}
+            tooltip={t("breadcrumb_badges.read_only_temporarily_disabled_description")}
+            className="temporarily-editable-badge"
+            onClick={() => enableEditing(false)}
+        />;
+    } else if (isReadOnly) {
+        return <Badge
+            icon="bx bx-lock-alt"
+            text={isExplicitReadOnly ? t("breadcrumb_badges.read_only_explicit") : t("breadcrumb_badges.read_only_auto")}
+            tooltip={isExplicitReadOnly ? t("breadcrumb_badges.read_only_explicit_description") : t("breadcrumb_badges.read_only_auto_description")}
+            className="read-only-badge"
+            onClick={() => enableEditing()}
+        />;
+    }
 }
 
 function ShareBadge() {
     const { note } = useNoteContext();
-    const { isSharedExternally, link } = useShareInfo(note);
+    const { isSharedExternally, link, linkHref } = useShareInfo(note);
 
     return (link &&
         <Badge
             icon={isSharedExternally ? "bx bx-world" : "bx bx-link"}
-        >
-            {isSharedExternally ? t("breadcrumb_badges.shared_publicly") : t("breadcrumb_badges.shared_locally")}
-        </Badge>
+            text={isSharedExternally ? t("breadcrumb_badges.shared_publicly") : t("breadcrumb_badges.shared_locally")}
+            tooltip={isSharedExternally ?
+                t("breadcrumb_badges.shared_publicly_description", { link }) :
+                t("breadcrumb_badges.shared_locally_description", { link })
+            }
+            className="share-badge"
+            href={linkHref}
+        />
     );
 }
 
-function Badge({ icon, children, onClick }: { icon: string, children: ComponentChildren, onClick?: () => void }) {
+function BacklinksBadge() {
+    const { note, viewScope } = useNoteContext();
+    const count = useBacklinkCount(note, viewScope?.viewMode === "default");
+    return (note && count > 0 &&
+        <BadgeWithDropdown
+            className="backlinks-badge backlinks-widget"
+            icon="bx bx-revision"
+            text={t("breadcrumb_badges.backlinks", { count })}
+            tooltip={t("breadcrumb_badges.backlinks_description", { count })}
+            dropdownOptions={{
+                dropdownContainerClassName: "backlinks-items"
+            }}
+        >
+            <BacklinksList note={note} />
+        </BadgeWithDropdown>
+    );
+}
+
+interface BadgeProps {
+    text: string;
+    icon?: string;
+    className: string;
+    tooltip?: string;
+    onClick?: MouseEventHandler<HTMLDivElement>;
+    href?: string;
+}
+
+function Badge({ icon, className, text, tooltip, onClick, href }: BadgeProps) {
+    const containerRef = useRef<HTMLDivElement>(null);
+    useStaticTooltip(containerRef, {
+        placement: "bottom",
+        fallbackPlacements: [ "bottom" ],
+        animation: false,
+        html: true,
+        title: tooltip
+    });
+
+    const content = <>
+        {icon && <><Icon icon={icon} />&nbsp;</>}
+        <span class="text">{text}</span>
+    </>;
+
     return (
         <div
-            className={clsx("breadcrumb-badge", { "clickable": !!onClick })}
+            ref={containerRef}
+            className={clsx("breadcrumb-badge", className, { "clickable": !!onClick })}
             onClick={onClick}
         >
-            <Icon icon={icon} />&nbsp;
-            {children}
+            {href ? <a href={href}>{content}</a> : <span>{content}</span>}
         </div>
+    );
+}
+
+function BadgeWithDropdown({ children, tooltip, className, dropdownOptions, ...props }: BadgeProps & {
+    children: ComponentChildren,
+    dropdownOptions?: Partial<DropdownProps>
+}) {
+    return (
+        <Dropdown
+            className={`dropdown-${className}`}
+            text={<Badge className={className} {...props} />}
+            noDropdownListStyle
+            noSelectButtonStyle
+            hideToggleArrow
+            title={tooltip}
+            titlePosition="bottom"
+            dropdownOptions={{ popperConfig: { placement: "bottom", strategy: "fixed" } }}
+            {...dropdownOptions}
+        >{children}</Dropdown>
     );
 }

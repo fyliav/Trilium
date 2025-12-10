@@ -161,11 +161,16 @@ export function FormDropdownDivider() {
     return <div className="dropdown-divider" />;
 }
 
-export function FormDropdownSubmenu({ icon, title, children }: { icon: string, title: ComponentChildren, children: ComponentChildren }) {
+export function FormDropdownSubmenu({ icon, title, children, dropStart }: {
+    icon: string,
+    title: ComponentChildren,
+    children: ComponentChildren,
+    dropStart?: boolean
+}) {
     const [ openOnMobile, setOpenOnMobile ] = useState(false);
 
     return (
-        <li className={`dropdown-item dropdown-submenu ${openOnMobile ? "submenu-open" : ""}`}>
+        <li className={clsx("dropdown-item dropdown-submenu", { "submenu-open": openOnMobile, "dropstart": dropStart })}>
             <span
                 className="dropdown-toggle"
                 onClick={(e) => {
@@ -184,5 +189,5 @@ export function FormDropdownSubmenu({ icon, title, children }: { icon: string, t
                 {children}
             </ul>
         </li>
-    )
+    );
 }

@@ -52,5 +52,5 @@ export function applyModals(rootContainer: RootContainer) {
         .child(<IncorrectCpuArchDialog />)
         .child(<PopupEditorDialog />)
         .child(<CallToActionDialog />)
-        .child(<ToastContainer />)
+        .child(<ToastContainer />);
 }

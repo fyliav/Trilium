@@ -1,26 +1,32 @@
-import { useContext, useEffect, useMemo, useRef, useState } from "preact/hooks";
-import Modal from "../react/Modal";
 import "./PopupEditor.css";
-import { useNoteContext, useNoteLabel, useTriliumEvent } from "../react/hooks";
-import NoteTitleWidget from "../note_title";
-import NoteIcon from "../note_icon";
-import NoteContext from "../../components/note_context";
-import { NoteContextContext, ParentComponent } from "../react/react_utils";
-import NoteDetail from "../NoteDetail";
+
 import { ComponentChildren } from "preact";
+import { useContext, useEffect, useMemo, useRef, useState } from "preact/hooks";
+
+import appContext from "../../components/app_context";
+import NoteContext from "../../components/note_context";
+import froca from "../../services/froca";
+import { t } from "../../services/i18n";
+import tree from "../../services/tree";
+import utils from "../../services/utils";
 import NoteList from "../collections/NoteList";
-import StandaloneRibbonAdapter from "../ribbon/components/StandaloneRibbonAdapter";
-import FormattingToolbar from "../ribbon/FormattingToolbar";
-import PromotedAttributes from "../PromotedAttributes";
 import FloatingButtons from "../FloatingButtons";
 import { DESKTOP_FLOATING_BUTTONS, MOBILE_FLOATING_BUTTONS, POPUP_HIDDEN_FLOATING_BUTTONS } from "../FloatingButtonsDefinitions";
-import utils from "../../services/utils";
-import tree from "../../services/tree";
-import froca from "../../services/froca";
+import NoteIcon from "../note_icon";
+import NoteTitleWidget from "../note_title";
+import NoteDetail from "../NoteDetail";
+import PromotedAttributes from "../PromotedAttributes";
+import { useNoteContext, useNoteLabel, useTriliumEvent } from "../react/hooks";
+import Modal from "../react/Modal";
+import { NoteContextContext, ParentComponent } from "../react/react_utils";
 import ReadOnlyNoteInfoBar from "../ReadOnlyNoteInfoBar";
+import StandaloneRibbonAdapter from "../ribbon/components/StandaloneRibbonAdapter";
+import FormattingToolbar from "../ribbon/FormattingToolbar";
 import MobileEditorToolbar from "../type_widgets/text/mobile_editor_toolbar";
-import { t } from "../../services/i18n";
-import appContext from "../../components/app_context";
+import BreadcrumbBadges from "../BreadcrumbBadges";
+import { isExperimentalFeatureEnabled } from "../../services/experimental_features";
+
+const isNewLayout = isExperimentalFeatureEnabled("new-layout");
 
 export default function PopupEditor() {
     const [ shown, setShown ] = useState(false);
@@ -61,7 +67,10 @@ export default function PopupEditor() {
         <NoteContextContext.Provider value={noteContext}>
             <DialogWrapper>
                 <Modal
-                    title={<TitleRow />}
+                    title={<>
+                        <TitleRow />
+                        {isNewLayout && <BreadcrumbBadges />}
+                    </>}
                     customTitleBarButtons={[{
                         iconClassName: "bx-expand-alt",
                         title: t("popup-editor.maximize"),
@@ -75,19 +84,17 @@ export default function PopupEditor() {
                     className="popup-editor-dialog"
                     size="lg"
                     show={shown}
-                    onShown={() => {
-                        parentComponent?.handleEvent("focusOnDetail", { ntxId: noteContext.ntxId });
-                    }}
+                    onShown={() => parentComponent?.handleEvent("focusOnDetail", { ntxId: noteContext.ntxId })}
                     onHidden={() => setShown(false)}
                     keepInDom // needed for faster loading
                     noFocus // automatic focus breaks block popup
                 >
-                    <ReadOnlyNoteInfoBar />
+                    {!isNewLayout && <ReadOnlyNoteInfoBar />}
                     <PromotedAttributes />
 
                     {isMobile
-                    ? <MobileEditorToolbar inPopupEditor />
-                    : <StandaloneRibbonAdapter component={FormattingToolbar} />}
+                        ? <MobileEditorToolbar inPopupEditor />
+                        : <StandaloneRibbonAdapter component={FormattingToolbar} />}
 
                     <FloatingButtons items={items} />
                     <NoteDetail />
@@ -95,7 +102,7 @@ export default function PopupEditor() {
                 </Modal>
             </DialogWrapper>
         </NoteContextContext.Provider>
-    )
+    );
 }
 
 export function DialogWrapper({ children }: { children: ComponentChildren }) {
@@ -107,7 +114,7 @@ export function DialogWrapper({ children }: { children: ComponentChildren }) {
         <div ref={wrapperRef} class={`quick-edit-dialog-wrapper ${note?.getColorClass() ?? ""}`}>
             {children}
         </div>
-    )
+    );
 }
 
 export function TitleRow() {
@@ -116,5 +123,5 @@ export function TitleRow() {
             <NoteIcon />
             <NoteTitleWidget />
         </div>
-    )
+    );
 }

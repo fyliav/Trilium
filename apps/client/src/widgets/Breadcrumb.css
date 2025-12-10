@@ -4,6 +4,49 @@
     min-height: 30px;
     align-items: center;
     padding: 10px;
+    container-type: inline-size;
+
+    @container (max-width: 700px) {
+        .breadcrumb-badges {
+            flex-shrink: 0;
+
+            >* {
+                flex-shrink: 0;
+                width: 18px;
+            }
+
+            .dropdown {
+                button {
+                    flex-shrink: 0;
+                }
+            }
+
+            .breadcrumb-badge {
+                flex-shrink: 0;
+                padding: 0 2px;
+
+                >* {
+                    text-overflow: clip;
+                }
+
+                .text {
+                    display: none;
+                }
+            }
+        }
+    }
+
+    @container (max-width: 500px) {
+        .breadcrumb {
+            .btn.icon-action {
+                width: 16px;
+            }
+        }
+
+        .icon-action {
+            margin: 0;
+        }
+    }
 }
 
 body.experimental-feature-new-layout .breadcrumb-row {
@@ -53,11 +96,23 @@ body.experimental-feature-new-layout .breadcrumb-row {
     }
 
     .dropdown-item span,
-    .dropdown-item strong {
+    .dropdown-item strong,
+    .breadcrumb-last-item {
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
         display: block;
         max-width: 300px;
+    }
+
+    .breadcrumb-last-item {
+        text-decoration: none;
+        color: unset;
+        cursor: text;
+    }
+
+    input {
+        padding: 0 10px;
+        width: 200px;
     }
 }

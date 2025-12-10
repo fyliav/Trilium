@@ -1,6 +1,6 @@
 import "./Breadcrumb.css";
 
-import { useMemo } from "preact/hooks";
+import { useMemo, useState } from "preact/hooks";
 import { Fragment } from "preact/jsx-runtime";
 
 import NoteContext from "../components/note_context";
@@ -12,6 +12,8 @@ import { useChildNotes, useNoteContext, useNoteLabel, useNoteProperty } from "./
 import Icon from "./react/Icon";
 import NoteLink from "./react/NoteLink";
 import link_context_menu from "../menus/link_context_menu";
+import { TitleEditor } from "./collections/board";
+import server from "../services/server";
 
 const COLLAPSE_THRESHOLD = 5;
 const INITIAL_ITEMS = 2;
@@ -27,10 +29,7 @@ export default function Breadcrumb() {
                 <>
                     {notePath.slice(0, INITIAL_ITEMS).map((item, index) => (
                         <Fragment key={item}>
-                            {index === 0
-                                ? <BreadcrumbRoot noteContext={noteContext} />
-                                : <BreadcrumbItem notePath={item} />
-                            }
+                            <BreadcrumbItem index={index} notePath={item} notePathLength={notePath.length} noteContext={noteContext} />
                             <BreadcrumbSeparator notePath={item} activeNotePath={notePath[index + 1]} noteContext={noteContext} />
                         </Fragment>
                     ))}
@@ -38,7 +37,7 @@ export default function Breadcrumb() {
                     {notePath.slice(-FINAL_ITEMS).map((item, index) => (
                         <Fragment key={item}>
                             <BreadcrumbSeparator notePath={notePath[notePath.length - FINAL_ITEMS - (1 - index)]} activeNotePath={item} noteContext={noteContext} />
-                            <BreadcrumbItem notePath={item} />
+                            <BreadcrumbItem index={notePath.length - FINAL_ITEMS + index} notePath={item} notePathLength={notePath.length} noteContext={noteContext} />
                         </Fragment>
                     ))}
                 </>
@@ -47,7 +46,7 @@ export default function Breadcrumb() {
                     <Fragment key={item}>
                         {index === 0
                             ? <BreadcrumbRoot noteContext={noteContext} />
-                            : <BreadcrumbItem notePath={item} />
+                            : <BreadcrumbItem index={index} notePath={item} notePathLength={notePath.length} noteContext={noteContext} />
                         }
                         {(index < notePath.length - 1 || note?.hasChildren()) &&
                             <BreadcrumbSeparator notePath={item} activeNotePath={notePath[index + 1]} noteContext={noteContext} />}
@@ -76,13 +75,54 @@ function BreadcrumbRoot({ noteContext }: { noteContext: NoteContext | undefined 
     );
 }
 
-function BreadcrumbItem({ notePath }: { notePath: string }) {
+function BreadcrumbLink({ notePath }: { notePath: string }) {
     return (
         <NoteLink
             notePath={notePath}
-            noPreview
         />
     );
+}
+
+function BreadcrumbLastItem({ notePath }: { notePath: string }) {
+    const noteId = notePath.split("/").at(-1);
+    const [ note ] = useState(() => froca.getNoteFromCache(noteId!));
+    const [ isEditing, setIsEditing ] = useState(false);
+    const title = useNoteProperty(note, "title");
+
+    if (!note) return null;
+
+    if (!isEditing) {
+        return (
+            <a
+                href="#"
+                className="breadcrumb-last-item tn-link"
+                onClick={(e) => {
+                    e.preventDefault();
+                    setIsEditing(true);
+                }}
+            >{title}</a>
+        );
+    }
+
+    return (
+        <TitleEditor
+            currentValue={title}
+            save={(newTitle) => { return server.put(`notes/${noteId}/title`, { title: newTitle.trim() }); }}
+            dismiss={() => setIsEditing(false)}
+        />
+    );
+}
+
+function BreadcrumbItem({ index, notePath, noteContext, notePathLength }: { index: number, notePathLength: number, notePath: string, noteContext: NoteContext | undefined }) {
+    if (index === 0) {
+        return <BreadcrumbRoot noteContext={noteContext} />;
+    }
+
+    if (index === notePathLength - 1) {
+        return <BreadcrumbLastItem notePath={notePath} />;
+    }
+
+    return <BreadcrumbLink notePath={notePath} />;
 }
 
 function BreadcrumbSeparator({ notePath, noteContext, activeNotePath }: { notePath: string, activeNotePath: string, noteContext: NoteContext | undefined }) {

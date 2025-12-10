@@ -26,6 +26,7 @@ export default function SharedInfo() {
 
 export function useShareInfo(note: FNote | null | undefined) {
     const [ link, setLink ] = useState<string>();
+    const [ linkHref, setLinkHref ] = useState<string>();
     const [ syncServerHost ] = useTriliumOption("syncServerHost");
 
     function refresh() {
@@ -52,9 +53,10 @@ export function useShareInfo(note: FNote | null | undefined) {
         }
 
         setLink(`<a href="${link}" class="external tn-link">${link}</a>`);
+        setLinkHref(link);
     }
 
-    useEffect(refresh, [ note ]);
+    useEffect(refresh, [ note, syncServerHost ]);
     useTriliumEvent("entitiesReloaded", ({ loadResults }) => {
         if (loadResults.getAttributeRows().find((attr) => attr.name?.startsWith("_share") && attributes.isAffecting(attr, note))) {
             refresh();
@@ -63,7 +65,7 @@ export function useShareInfo(note: FNote | null | undefined) {
         }
     });
 
-    return { link, isSharedExternally: !!syncServerHost };
+    return { link, linkHref, isSharedExternally: !!syncServerHost };
 }
 
 function getShareId(note: FNote) {

@@ -5,7 +5,7 @@ import NoteContext from "../components/note_context";
 import FNote from "../entities/fnote";
 import ActionButton, { ActionButtonProps } from "./react/ActionButton";
 import { useIsNoteReadOnly, useNoteLabelBoolean, useTriliumEvent, useTriliumOption, useWindowSize } from "./react/hooks";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "preact/hooks";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "preact/hooks";
 import { createImageSrcUrl, openInAppHelpFromUrl } from "../services/utils";
 import server from "../services/server";
 import { BacklinkCountResponse, BacklinksResponse, SaveSqlConsoleResponse } from "@triliumnext/commons";
@@ -20,6 +20,7 @@ import RawHtml from "./react/RawHtml";
 import { ViewTypeOptions } from "./collections/interface";
 import attributes from "../services/attributes";
 import LoadResults from "../services/load_results";
+import { isExperimentalFeatureEnabled } from "../services/experimental_features";
 
 export interface FloatingButtonContext {
     parentComponent: Component;
@@ -75,6 +76,8 @@ export const POPUP_HIDDEN_FLOATING_BUTTONS: FloatingButtonsList = [
     InAppHelpButton,
     ToggleReadOnlyButton
 ];
+
+const isNewLayout = isExperimentalFeatureEnabled("new-layout");
 
 function RefreshBackendLogButton({ note, parentComponent, noteContext, isDefaultViewMode }: FloatingButtonContext) {
     const isEnabled = (note.noteId === "_backendLog" || note.type === "render") && isDefaultViewMode;
@@ -308,22 +311,9 @@ function InAppHelpButton({ note }: FloatingButtonContext) {
 }
 
 function Backlinks({ note, isDefaultViewMode }: FloatingButtonContext) {
-    let [ backlinkCount, setBacklinkCount ] = useState(0);
-    let [ popupOpen, setPopupOpen ] = useState(false);
+    const [ popupOpen, setPopupOpen ] = useState(false);
     const backlinksContainerRef = useRef<HTMLDivElement>(null);
-
-    function refresh() {
-        if (!isDefaultViewMode) return;
-
-        server.get<BacklinkCountResponse>(`note-map/${note.noteId}/backlink-count`).then(resp => {
-            setBacklinkCount(resp.count);
-        });
-    }
-
-    useEffect(() => refresh(), [ note ]);
-    useTriliumEvent("entitiesReloaded", ({ loadResults }) => {
-        if (needsRefresh(note, loadResults)) refresh();
-    });
+    const backlinkCount = useBacklinkCount(note, isDefaultViewMode);
 
     // Determine the max height of the container.
     const { windowHeight } = useWindowSize();
@@ -336,7 +326,7 @@ function Backlinks({ note, isDefaultViewMode }: FloatingButtonContext) {
         }
     }, [ popupOpen, windowHeight ]);
 
-    const isEnabled = isDefaultViewMode && backlinkCount > 0;
+    const isEnabled = !isNewLayout && isDefaultViewMode && backlinkCount > 0;
     return (isEnabled &&
         <div className="backlinks-widget has-overflow">
             <div
@@ -355,15 +345,34 @@ function Backlinks({ note, isDefaultViewMode }: FloatingButtonContext) {
     );
 }
 
-function BacklinksList({ note }: { note: FNote }) {
+export function useBacklinkCount(note: FNote | null | undefined, isDefaultViewMode: boolean) {
+    const [ backlinkCount, setBacklinkCount ] = useState(0);
+
+    const refresh = useCallback(() => {
+        if (!note || !isDefaultViewMode) return;
+
+        server.get<BacklinkCountResponse>(`note-map/${note.noteId}/backlink-count`).then(resp => {
+            setBacklinkCount(resp.count);
+        });
+    }, [ isDefaultViewMode, note ]);
+
+    useEffect(() => refresh(), [ refresh ]);
+    useTriliumEvent("entitiesReloaded", ({ loadResults }) => {
+        if (note && needsRefresh(note, loadResults)) refresh();
+    });
+
+    return backlinkCount;
+}
+
+export function BacklinksList({ note }: { note: FNote }) {
     const [ backlinks, setBacklinks ] = useState<BacklinksResponse>([]);
 
     function refresh() {
         server.get<BacklinksResponse>(`note-map/${note.noteId}/backlinks`).then(async (backlinks) => {
             // prefetch all
             const noteIds = backlinks
-                    .filter(bl => "noteId" in bl)
-                    .map((bl) => bl.noteId);
+                .filter(bl => "noteId" in bl)
+                .map((bl) => bl.noteId);
             await froca.getNotes(noteIds);
             setBacklinks(backlinks);
         });

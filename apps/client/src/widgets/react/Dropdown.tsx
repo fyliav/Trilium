@@ -117,8 +117,8 @@ export default function Dropdown({ id, className, buttonClassName, isStatic, chi
                 aria-expanded="false"
                 id={id ?? ariaId}
                 disabled={disabled}
-                onMouseOver={() => showTooltip()}
-                onMouseLeave={() => hideTooltip()}
+                onMouseEnter={showTooltip}
+                onMouseLeave={hideTooltip}
                 {...buttonProps}
             >
                 {text}

@@ -89,13 +89,13 @@
      * the color is adjusted based on the current color scheme (light or dark). The lightness
      * component of the color represented in the CIELAB color space, will be
      * constrained to a certain percentage defined below.
-     * 
+     *
      * Note: the tree background may vary when background effects are enabled, so it is recommended
      * to maintain a higher contrast margin than on the usual note tree solid background. */
 
     /* The maximum perceptual lightness for the custom color in the light theme (%): */
     --tree-item-light-theme-max-color-lightness: 60;
-    
+
     /* The minimum perceptual lightness for the custom color in the dark theme (%): */
     --tree-item-dark-theme-min-color-lightness: 65;
 }
@@ -165,7 +165,7 @@ body.desktop .dropdown-submenu .dropdown-menu {
     --menu-item-start-padding: 8px;
     --menu-item-end-padding: 22px;
     --menu-item-vertical-padding: 2px;
-    
+
     padding-top: var(--menu-item-vertical-padding) !important;
     padding-bottom: var(--menu-item-vertical-padding) !important;
     padding-inline-start: var(--menu-item-start-padding) !important;
@@ -174,6 +174,11 @@ body.desktop .dropdown-submenu .dropdown-menu {
     /* Note: the right padding should also accommodate the submenu arrow. */
     border-radius: 6px;
     cursor: default !important;
+}
+
+.dropdown-menu:has(> .dropdown-submenu.dropstart) > .dropdown-item {
+    padding-inline-end: var(--menu-item-start-padding) !important;
+    padding-inline-start: var(--menu-item-end-padding) !important;
 }
 
 :root .dropdown-item:focus-visible {
@@ -249,7 +254,7 @@ html body .dropdown-item[disabled] {
 }
 
 /* Menu item arrow */
-.dropdown-menu .dropdown-toggle::after {
+.dropdown-submenu:not(.dropstart) .dropdown-toggle::after {
     content: "\ed3b" !important;
     position: absolute;
     display: flex !important;
@@ -257,6 +262,22 @@ html body .dropdown-item[disabled] {
     justify-content: center;
     top: 0;
     inset-inline-end: 0;
+    margin: unset !important;
+    border: unset !important;
+    padding: 0 4px;
+    font-family: boxicons;
+    font-size: 1.2em;
+    color: var(--menu-item-arrow-color) !important;
+}
+
+.dropdown-submenu.dropstart .dropdown-toggle::before {
+    content: "\ea4d" !important;
+    position: absolute;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    inset-inline-start: 0;
     margin: unset !important;
     border: unset !important;
     padding: 0 4px;
@@ -339,7 +360,7 @@ body.mobile .dropdown-menu {
     font-size: 1em !important;
     backdrop-filter: var(--dropdown-backdrop-filter);
     position: relative;
-    
+
     .dropdown-toggle::after {
         top: 0.5em;
         right: var(--dropdown-menu-padding-horizontal);
@@ -356,7 +377,7 @@ body.mobile .dropdown-menu {
         padding: var(--dropdown-menu-padding-vertical) var(--dropdown-menu-padding-horizontal) !important;
         background: var(--card-background-color);
         border-bottom: 1px solid var(--menu-item-delimiter-color) !important;
-        border-radius: 0;        
+        border-radius: 0;
     }
 
     .dropdown-item:first-of-type,
@@ -367,9 +388,9 @@ body.mobile .dropdown-menu {
         border-top-right-radius: 6px;
     }
 
-    .dropdown-item:last-of-type,    
+    .dropdown-item:last-of-type,
     .dropdown-item:has(+ .dropdown-divider),
-    .dropdown-custom-item:last-of-type,    
+    .dropdown-custom-item:last-of-type,
     .dropdown-custom-item:has(+ .dropdown-divider) {
         border-bottom-left-radius: 6px;
         border-bottom-right-radius: 6px;
@@ -392,10 +413,10 @@ body.mobile .dropdown-menu {
             --menu-background-color: --menu-submenu-mobile-background-color;
             --bs-dropdown-divider-margin-y: 0.25rem;
             border-radius: 0;
-            max-height: 0;            
+            max-height: 0;
             transition: max-height 100ms ease-in;
-            display: block !important;            
-            
+            display: block !important;
+
             &.show {
                 max-height: 1000px;
                 padding: 0.5rem 0.75rem !important;
@@ -405,7 +426,7 @@ body.mobile .dropdown-menu {
         &.submenu-open {
             .dropdown-toggle {
                 padding-bottom: var(--dropdown-menu-padding-vertical);
-            }            
+            }
         }
     }
 

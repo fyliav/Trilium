@@ -12,6 +12,7 @@ import shortcutService from "../../services/shortcuts.js";
 import appContext from "../../components/app_context.js";
 import type { Attribute } from "../../services/attribute_parser.js";
 import { focusSavedElement, saveFocusedElement } from "../../services/focus.js";
+import { isExperimentalFeatureEnabled } from "../../services/experimental_features.js";
 
 const TPL = /*html*/`
 <div class="attr-detail tn-tool-dialog">
@@ -309,6 +310,8 @@ interface SearchRelatedResponse {
     count: number;
 }
 
+const isNewLayout = isExperimentalFeatureEnabled("new-layout");
+
 export default class AttributeDetailWidget extends NoteContextAwareWidget {
     private $title!: JQuery<HTMLElement>;
     private $inputName!: JQuery<HTMLElement>;
@@ -578,6 +581,13 @@ export default class AttributeDetailWidget extends NoteContextAwareWidget {
             .css("right", detPosition.right)
             .css("top", y - offset.top + 70)
             .css("max-height", outerHeight + y > height - 50 ? height - y - 50 : 10000);
+
+        if (isNewLayout) {
+            this.$widget
+                .css("top", "unset")
+                .css("bottom", 70)
+                .css("max-height", "80vh");
+        }
 
         if (focus === "name") {
             this.$inputName.trigger("focus").trigger("select");

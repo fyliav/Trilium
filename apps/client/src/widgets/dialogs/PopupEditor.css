@@ -31,6 +31,7 @@ body.mobile .modal.popup-editor-dialog .modal-dialog {
     flex-grow: 1;
     display: flex;
     align-items: center;
+    margin-block: 0;
 }
 
 .modal.popup-editor-dialog .modal-header .note-title-widget {

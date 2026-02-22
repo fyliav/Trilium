@@ -11,7 +11,8 @@ interface Event {
     endDate?: string | null,
     startTime?: string | null,
     endTime?: string | null,
-    isArchived?: boolean;
+    isArchived?: boolean,
+    recurrence?: string | null;
 }
 
 export async function buildEvents(noteIds: string[]) {
@@ -28,8 +29,9 @@ export async function buildEvents(noteIds: string[]) {
         const endDate = getCustomisableLabel(note, "endDate", "calendar:endDate");
         const startTime = getCustomisableLabel(note, "startTime", "calendar:startTime");
         const endTime = getCustomisableLabel(note, "endTime", "calendar:endTime");
+        const recurrence = getCustomisableLabel(note, "recurrence", "calendar:recurrence");
         const isArchived = note.hasLabel("archived");
-        events.push(await buildEvent(note, { startDate, endDate, startTime, endTime, isArchived }));
+        events.push(await buildEvent(note, { startDate, endDate, startTime, endTime, recurrence, isArchived }));
     }
 
     return events.flat();
@@ -79,7 +81,7 @@ export async function buildEventsForCalendar(note: FNote, e: EventSourceFuncArg)
     return events.flat();
 }
 
-export async function buildEvent(note: FNote, { startDate, endDate, startTime, endTime, isArchived }: Event) {
+export async function buildEvent(note: FNote, { startDate, endDate, startTime, endTime, recurrence, isArchived }: Event) {
     const customTitleAttributeName = note.getLabelValue("calendar:title");
     const titles = await parseCustomTitle(customTitleAttributeName, note);
     const colorClass = note.getColorClass();
@@ -117,6 +119,17 @@ export async function buildEvent(note: FNote, { startDate, endDate, startTime, e
         };
         if (endDate) {
             eventData.end = endDate;
+        }
+
+        if (recurrence) {
+            eventData.rrule = `DTSTART:${startDate.replace(/[-:]/g, "")}\n${recurrence}`;
+            if (endDate){
+                const duration = (d => 
+                    String(d / 36e5 | 0).padStart(2, "0") + ":" +
+                    String(d / 6e4 % 60 | 0).padStart(2, "0")
+                )((new Date(endDate)) - (new Date(startDate)));
+                eventData.duration = duration
+            }
         }
         events.push(eventData);
     }

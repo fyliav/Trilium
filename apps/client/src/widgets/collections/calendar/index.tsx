@@ -252,6 +252,7 @@ function usePlugins(isEditable: boolean, isCalendarRoot: boolean) {
             plugins.push((await import("@fullcalendar/timegrid")).default);
             plugins.push((await import("@fullcalendar/list")).default);
             plugins.push((await import("@fullcalendar/multimonth")).default);
+            plugins.push((await import("@fullcalendar/rrule")).default);
             if (isEditable || isCalendarRoot) {
                 plugins.push((await import("@fullcalendar/interaction")).default);
             }

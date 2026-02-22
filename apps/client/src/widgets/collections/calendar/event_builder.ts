@@ -122,13 +122,13 @@ export async function buildEvent(note: FNote, { startDate, endDate, startTime, e
         }
 
         if (recurrence) {
+            delete eventData.end;
             eventData.rrule = `DTSTART:${startDate.replace(/[-:]/g, "")}\n${recurrence}`;
             if (endDate){
-                const duration = (d => 
-                    String(d / 36e5 | 0).padStart(2, "0") + ":" +
-                    String(d / 6e4 % 60 | 0).padStart(2, "0")
-                )((new Date(endDate)) - (new Date(startDate)));
-                eventData.duration = duration
+                const diffMs = new Date(endDate).getTime() - new Date(startDate).getTime();
+                const hours = Math.floor(diffMs / 3600000);
+                const minutes = Math.floor((diffMs / 60000) % 60);
+                eventData.duration = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
             }
         }
         events.push(eventData);

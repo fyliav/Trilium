@@ -186,6 +186,18 @@
         present, or <code spellcheck="false">startDate</code>).</td>
     </tr>
     <tr>
+      <td><code spellcheck="false">#recurrence</code>
+      </td>
+      <td>This is an optional CalDAV <code spellcheck="false">RRULE</code> string
+        that if present, determines whether a task should repeat or not. Note that
+        it does not include the <code spellcheck="false">DTSTART</code> attribute,
+        which is derived from the <code spellcheck="false">#startDate</code> and
+        <code
+        spellcheck="false">#startTime</code>directly. For examples of valid <code spellcheck="false">RRULE</code> strings
+          see <a href="https://icalendar.org/rrule-tool.html">https://icalendar.org/rrule-tool.html</a>
+      </td>
+    </tr>
+    <tr>
       <td><code spellcheck="false">#color</code>
       </td>
       <td>Displays the event with a specified color (named such as <code spellcheck="false">red</code>,

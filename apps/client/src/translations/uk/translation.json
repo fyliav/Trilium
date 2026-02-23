@@ -1533,6 +1533,7 @@
     "add-term-to-dictionary": "Додати \"{{term}}\" до словника",
     "cut": "Вирізати",
     "copy": "Копіювати",
+    "copy-as-markdown": "Копіювати як Markdown",
     "copy-link": "Копіювати посилання",
     "paste": "Вставити",
     "paste-as-plain-text": "Вставити як звичайний текст",

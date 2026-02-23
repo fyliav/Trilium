@@ -3,6 +3,8 @@ import options from "../services/options.js";
 import zoomService from "../components/zoom.js";
 import contextMenu, { type MenuItem } from "./context_menu.js";
 import { t } from "../services/i18n.js";
+import server from "../services/server.js";
+import * as clipboardExt from "../services/clipboard_ext.js";
 import type { BrowserWindow } from "electron";
 import type { CommandNames, AppContext } from "../components/app_context.js";
 
@@ -59,6 +61,33 @@ function setupContextMenu() {
                 shortcut: `${platformModifier}+C`,
                 uiIcon: "bx bx-copy",
                 handler: () => webContents.copy()
+            });
+
+            items.push({
+                enabled: hasText,
+                title: t("electron_context_menu.copy-as-markdown"),
+                uiIcon: "bx bx-copy-alt",
+                handler: async () => {
+                    const selection = window.getSelection();
+                    if (!selection || !selection.rangeCount) return '';
+
+                    const range = selection.getRangeAt(0);
+                    const div = document.createElement('div');
+                    div.appendChild(range.cloneContents());
+
+                    const htmlContent = div.innerHTML;
+                    if (htmlContent) {
+                        try {
+                            const { markdownContent } = await server.post<{ markdownContent: string }>(
+                                "other/to-markdown",
+                                { htmlContent }
+                            );
+                            await clipboardExt.copyTextWithToast(markdownContent);
+                        } catch (error) {
+                            console.error("Failed to copy as markdown:", error);
+                        }
+                    }
+                }
             });
         }
 

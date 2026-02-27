@@ -71,15 +71,7 @@ export async function buildEventsForCalendar(note: FNote, e: EventSourceFuncArg)
             continue;
         }
 
-        try {
-            events.push(await buildEvent(dateNote, { startDate }));
-        } catch (error) {
-            if (error instanceof Error) {
-                const errorMessage = error.message;
-                toastService.showError(errorMessage);
-                console.error(errorMessage);
-            }
-        }
+        events.push(await buildEvent(dateNote, { startDate }));
 
 
         if (dateNote.hasChildren()) {
@@ -95,16 +87,8 @@ export async function buildEventsForCalendar(note: FNote, e: EventSourceFuncArg)
     const childNotes = await froca.getNotes(childNoteIds);
     for (const childNote of childNotes) {
         const startDate = childNoteToDateMapping[childNote.noteId];
-        try {
-            const event = await buildEvent(childNote, { startDate });
-            events.push(event);
-        } catch (error) {
-            if (error instanceof Error) {
-                const errorMessage = error.message;
-                toastService.showError(errorMessage);
-                console.error(errorMessage);
-            }
-        }
+        const event = await buildEvent(childNote, { startDate });
+        events.push(event);
     }
 
     return events.flat();

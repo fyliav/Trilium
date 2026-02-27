@@ -33,7 +33,15 @@ export async function buildEvents(noteIds: string[]) {
         const endTime = getCustomisableLabel(note, "endTime", "calendar:endTime");
         const recurrence = getCustomisableLabel(note, "recurrence", "calendar:recurrence");
         const isArchived = note.hasLabel("archived");
-        events.push(await buildEvent(note, { startDate, endDate, startTime, endTime, recurrence, isArchived }));
+        try {
+            events.push(await buildEvent(note, { startDate, endDate, startTime, endTime, recurrence, isArchived }));
+        } catch (error) {
+            if (error instanceof Error) {
+                const errorMessage = error.message;
+                toastService.showError(errorMessage);
+                console.error(errorMessage);
+            }
+        }
     }
 
     return events.flat();
@@ -61,7 +69,16 @@ export async function buildEventsForCalendar(note: FNote, e: EventSourceFuncArg)
             continue;
         }
 
-        events.push(await buildEvent(dateNote, { startDate }));
+        try {
+            events.push(await buildEvent(dateNote, { startDate }));
+        } catch (error) {
+            if (error instanceof Error) {
+                const errorMessage = error.message;
+                toastService.showError(errorMessage);
+                console.error(errorMessage);
+            }
+        }
+
 
         if (dateNote.hasChildren()) {
             const childNoteIds = await dateNote.getSubtreeNoteIds();
@@ -76,8 +93,16 @@ export async function buildEventsForCalendar(note: FNote, e: EventSourceFuncArg)
     const childNotes = await froca.getNotes(childNoteIds);
     for (const childNote of childNotes) {
         const startDate = childNoteToDateMapping[childNote.noteId];
-        const event = await buildEvent(childNote, { startDate });
-        events.push(event);
+        try {
+            const event = await buildEvent(childNote, { startDate });
+            events.push(event);
+        } catch (error) {
+            if (error instanceof Error) {
+                const errorMessage = error.message;
+                toastService.showError(errorMessage);
+                console.error(errorMessage);
+            }
+        }
     }
 
     return events.flat();
@@ -145,9 +170,7 @@ export async function buildEvent(note: FNote, { startDate, endDate, startTime, e
                     eventData.duration = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
                 }
             } else {
-                const errorMessage = `Note "${note.noteId} ${note.title}" has an invalid #recurrence string. This note will not recur.`;
-                toastService.showError(errorMessage);
-                console.error(errorMessage);
+                throw new Error(`Note "${note.noteId} ${note.title}" has an invalid #recurrence string. Excluding...`);
             }
         }
         events.push(eventData);

@@ -9,7 +9,8 @@ import Button from "../react/Button";
 import "./Pagination.css";
 import clsx from "clsx";
 
-interface PaginationContext {
+export interface PaginationContext {
+    className?: string;
     page: number;
     setPage: Dispatch<StateUpdater<number>>;
     pageNotes?: FNote[];
@@ -18,11 +19,11 @@ interface PaginationContext {
     totalNotes: number;
 }
 
-export function Pager({ page, pageSize, setPage, pageCount, totalNotes }: Omit<PaginationContext, "pageNotes">) {
+export function Pager({ className, page, pageSize, setPage, pageCount, totalNotes }: Omit<PaginationContext, "pageNotes">) {
     if (pageCount < 2) return;
 
     return (
-        <div className="note-list-pager-container">
+        <div className={clsx("note-list-pager-container", className)}>
             <div className="note-list-pager">
                 <ActionButton
                     icon="bx bx-chevron-left"

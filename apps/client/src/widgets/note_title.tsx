@@ -26,6 +26,7 @@ export default function NoteTitleWidget(props: {className?: string}) {
             || note === undefined
             || (note.isProtected && !protected_session_holder.isProtectedSessionAvailable())
             || isLaunchBarConfig(note.noteId)
+            || note.noteId.startsWith("_help_")
             || viewScope?.viewMode !== "default";
         setReadOnly(isReadOnly);
     }, [ note, note?.noteId, note?.isProtected, viewScope?.viewMode ]);

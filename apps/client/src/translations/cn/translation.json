@@ -1534,7 +1534,8 @@
     "task-list": "任务列表",
     "new-feature": "新建",
     "collections": "集合",
-    "book": "集合"
+    "book": "集合",
+    "ai-chat": "AI聊天"
   },
   "protect_note": {
     "toggle-on": "保护笔记",
@@ -1630,7 +1631,8 @@
   },
   "search_result": {
     "no_notes_found": "没有找到符合搜索条件的笔记。",
-    "search_not_executed": "尚未执行搜索。请点击上方的\"搜索\"按钮查看结果。"
+    "search_not_executed": "尚未执行搜索。",
+    "search_now": "立即搜索"
   },
   "spacer": {
     "configure_launchbar": "配置启动栏"
@@ -2005,7 +2007,9 @@
     "app-restart-required": "（需重启程序以应用更改）"
   },
   "pagination": {
-    "total_notes": "{{count}} 篇笔记"
+    "total_notes": "{{count}} 篇笔记",
+    "prev_page": "上一页",
+    "next_page": "下一页"
   },
   "collections": {
     "rendering_error": "出现错误无法显示内容。"

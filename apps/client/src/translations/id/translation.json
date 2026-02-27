@@ -83,7 +83,10 @@
     "erase_notes_warning": "Hapus catatan secara permanen (tidak bisa dikembalikan), termasuk semua duplikat. Aksi akan memaksa aplikasi untuk mengulang kembali.",
     "notes_to_be_deleted": "Catatan-catatan berikut akan dihapuskan ({{notesCount}})",
     "no_note_to_delete": "Tidak ada Catatan yang akan dihapus (hanya duplikat).",
-    "broken_relations_to_be_deleted": "Hubungan berikut akan diputus dan dihapus ({{ relationCount}})"
+    "broken_relations_to_be_deleted": "Hubungan berikut akan diputus dan dihapus ({{ relationCount}})",
+    "cancel": "Batalkan",
+    "ok": "Setuju",
+    "deleted_relation_text": "Catatan {{- note}} (yang akan dihapus) dirujuk oleh relasi {{- relation}} yang berasal dari {{- source}}."
   },
   "clone_to": {
     "clone_notes_to": "Duplikat catatan ke…",
@@ -96,5 +99,12 @@
     "clone_to_selected_note": "Salin ke catatan yang dipilih",
     "no_path_to_clone_to": "Tidak ada jalur untuk digandakan.",
     "note_cloned": "Catatan \"{{clonedTitle}}\" telah digandakan ke dalam \"{{targetTitle}}\""
+  },
+  "search_result": {
+    "search_now": "Cari sekarang"
+  },
+  "export": {
+    "export_note_title": "Mengeluarkan catatan",
+    "close": "Tutup"
   }
 }

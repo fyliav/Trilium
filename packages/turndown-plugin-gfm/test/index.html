@@ -141,11 +141,11 @@
 </div>
 <pre class="expected">| Column 1 | Column 2 | Column 3 | Column 4 |
 | --- | --- | --- | --- |
-|     | Row 1, Column 2 | Row 1, Column 3 | Row 1, Column 4 |
-| Row 2, Column 1 |     | Row 2, Column 3 | Row 2, Column 4 |
-| Row 3, Column 1 | Row 3, Column 2 |     | Row 3, Column 4 |
-| Row 4, Column 1 | Row 4, Column 2 | Row 4, Column 3 |     |
-|     |     |     | Row 5, Column 4 |</pre>
+|  | Row 1, Column 2 | Row 1, Column 3 | Row 1, Column 4 |
+| Row 2, Column 1 |  | Row 2, Column 3 | Row 2, Column 4 |
+| Row 3, Column 1 | Row 3, Column 2 |  | Row 3, Column 4 |
+| Row 4, Column 1 | Row 4, Column 2 | Row 4, Column 3 |  |
+|  |  |  | Row 5, Column 4 |</pre>
 </div>
 
 <div class="case" data-name="empty rows">
@@ -174,7 +174,7 @@
 <pre class="expected">| Heading 1 | Heading 2 |
 | --- | --- |
 | Row 1 | Row 1 |
-|     |     |
+|  |  |
 | Row 3 | Row 3 |</pre>
 </div>
 
@@ -259,7 +259,7 @@
       <tbody><tr><th>Heading</th></tr></tbody>
     </table>
   </div>
-  <pre class="expected">|     |
+  <pre class="expected">|  |
 | --- |
 | Heading |
 | --- |</pre>
@@ -272,7 +272,7 @@
       <tr><td>Row 2 Cell 1</td><td>Row 2 Cell 2</td></tr>
     </table>
   </div>
-  <pre class="expected">|     |     |
+  <pre class="expected">|  |  |
 | --- | --- |
 | Row 1 Cell 1 | Row 1 Cell 2 |
 | Row 2 Cell 1 | Row 2 Cell 2 |</pre>
@@ -291,7 +291,7 @@
       </tr>
     </table>
   </div>
-  <pre class="expected">|     |     |
+  <pre class="expected">|  |  |
 | --- | --- |
 | Heading | Not a heading |
 | Heading | Not a heading |</pre>

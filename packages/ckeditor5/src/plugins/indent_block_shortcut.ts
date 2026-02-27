@@ -21,7 +21,6 @@ export default class IndentBlockShortcutPlugin extends Plugin {
                 command.execute();
             }
         }, {
-            priority: "highest",
             context: node => isWidget( node ) || node.is( 'editableElement' ),
         });
     }

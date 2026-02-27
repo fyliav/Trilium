@@ -599,7 +599,8 @@
     "beta-feature": "Beta",
     "task-list": "タスクリスト",
     "new-feature": "New",
-    "collections": "コレクション"
+    "collections": "コレクション",
+    "ai-chat": "AI チャット"
   },
   "edited_notes": {
     "no_edited_notes_found": "この日の編集されたノートはまだありません...",

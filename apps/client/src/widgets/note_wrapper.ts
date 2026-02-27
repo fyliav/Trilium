@@ -1,11 +1,11 @@
-import FlexContainer from "./containers/flex_container.js";
-import utils from "../services/utils.js";
-import attributeService from "../services/attributes.js";
-import type BasicWidget from "./basic_widget.js";
 import type { EventData } from "../components/app_context.js";
 import type NoteContext from "../components/note_context.js";
 import type FNote from "../entities/fnote.js";
+import attributeService from "../services/attributes.js";
 import { getLocaleById } from "../services/i18n.js";
+import utils from "../services/utils.js";
+import type BasicWidget from "./basic_widget.js";
+import FlexContainer from "./containers/flex_container.js";
 
 export default class NoteWrapperWidget extends FlexContainer<BasicWidget> {
 
@@ -43,10 +43,15 @@ export default class NoteWrapperWidget extends FlexContainer<BasicWidget> {
 
     refresh() {
         const isHiddenExt = this.isHiddenExt(); // preserve through class reset
+        const isActive = this.$widget.hasClass("active");
 
         this.$widget.removeClass();
 
         this.toggleExt(!isHiddenExt);
+
+        if (isActive) {
+            this.$widget.addClass("active");
+        }
 
         this.$widget.addClass("component note-split");
 
@@ -92,6 +97,11 @@ export default class NoteWrapperWidget extends FlexContainer<BasicWidget> {
     #hasBackgroundEffects(note: FNote): boolean {
         const MIME_TYPES_WITH_BACKGROUND_EFFECTS = [
             "application/pdf"
+        ];
+
+        const COLLECTIONS_WITH_BACKGROUND_EFFECTS = [
+            "grid",
+            "list"
         ]
 
         if (note.isOptions()) {
@@ -99,6 +109,10 @@ export default class NoteWrapperWidget extends FlexContainer<BasicWidget> {
         }
 
         if (note.type === "file" && MIME_TYPES_WITH_BACKGROUND_EFFECTS.includes(note.mime)) {
+            return true;
+        }
+
+        if (note.type === "book" && COLLECTIONS_WITH_BACKGROUND_EFFECTS.includes(note.getLabelValue("viewType") ?? "none")) {
             return true;
         }
 

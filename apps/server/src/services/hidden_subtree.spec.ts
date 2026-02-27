@@ -192,5 +192,16 @@ describe("Hidden Subtree", () => {
             llmNote = becca.getNote(noteId);
             expect(llmNote).toBeFalsy();
         });
+
+        it("fixes attribute of wrong type", () => {
+            const template = becca.getNoteOrThrow("_template_table");
+            cls.init(() => {
+                template.setAttribute("relation", "template", "root");
+                hiddenSubtreeService.checkHiddenSubtree();
+            });
+            const attr = template.getAttributes().find(a => a.name === "template");
+            expect(attr).toBeDefined();
+            expect(attr?.type).toBe("label");
+        });
     });
 });

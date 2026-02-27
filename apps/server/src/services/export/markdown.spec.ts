@@ -179,10 +179,10 @@ describe("Markdown export", () => {
             > [!IMPORTANT]
             > This is a very important information.
             >${space}
-            > |     |     |
+            > |  |  |
             > | --- | --- |
-            > | 1   | 2   |
-            > | 3   | 4   |
+            > | 1 | 2 |
+            > | 3 | 4 |
 
             > [!CAUTION]
             > This is a caution.
@@ -374,10 +374,10 @@ describe("Markdown export", () => {
             </figure>
         `;
         const expected = trimIndentation`\
-            |     |     |
+            |  |  |
             | --- | --- |
-            | Hi  | there |
-            | Hi  | there |`;
+            | Hi | there |
+            | Hi | there |`;
         expect(markdownExportService.toMarkdown(html)).toBe(expected);
     });
 

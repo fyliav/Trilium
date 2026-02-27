@@ -66,11 +66,22 @@ export default function MobileEditorToolbar({ inPopupEditor }: MobileEditorToolb
 }
 
 function usePositioningOniOS(enabled: boolean, wrapperRef: MutableRef<HTMLDivElement | null>) {
+    // Capture the baseline offset (Safari nav bar height) before the keyboard opens.
+    const baselineOffset = useRef(window.innerHeight - (window.visualViewport?.height ?? window.innerHeight));
+
     const adjustPosition = useCallback(() => {
         if (!wrapperRef.current) return;
-        const bottom = window.innerHeight - (window.visualViewport?.height || 0);
-        wrapperRef.current.style.bottom = `${bottom}px`;
-    }, []);
+        const viewport = window.visualViewport;
+        if (!viewport) return;
+        // Subtract the baseline so only the keyboard's contribution remains.
+        const bottom = window.innerHeight - viewport.height - viewport.offsetTop;
+        if (bottom - baselineOffset.current <= 0) {
+            // Keyboard is hidden — clear the inline style so CSS controls positioning.
+            wrapperRef.current.style.removeProperty("bottom");
+        } else {
+            wrapperRef.current.style.bottom = `${bottom}px`;
+        }
+    }, [ wrapperRef ]);
 
     useEffect(() => {
         if (!isIOS() || !enabled) return;
@@ -82,7 +93,7 @@ function usePositioningOniOS(enabled: boolean, wrapperRef: MutableRef<HTMLDivEle
             window.visualViewport?.removeEventListener("resize", adjustPosition);
             window.removeEventListener("scroll", adjustPosition);
         };
-    }, [ enabled ]);
+    }, [ enabled, adjustPosition ]);
 }
 
 /**

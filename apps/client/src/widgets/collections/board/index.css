@@ -14,7 +14,7 @@
   height: 100%;
   display: flex;
   gap: 1em;
-  padding-inline: 12px;
+  margin-inline: var(--content-margin-inline);
   padding-block: 4px;
   align-items: flex-start;
   overflow-x: auto;

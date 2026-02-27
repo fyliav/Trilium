@@ -3,7 +3,7 @@ import { LOCALES } from "@triliumnext/commons";
 import { EventData } from "../../components/app_context.js";
 import { getEnabledExperimentalFeatureIds } from "../../services/experimental_features.js";
 import options from "../../services/options.js";
-import utils, { isMobile } from "../../services/utils.js";
+import utils, { isIOS, isMobile } from "../../services/utils.js";
 import { readCssVar } from "../../utils/css-var.js";
 import type BasicWidget from "../basic_widget.js";
 import FlexContainer from "./flex_container.js";
@@ -13,15 +13,20 @@ import FlexContainer from "./flex_container.js";
  *
  * For convenience, the root container has a few class selectors that can be used to target some global state:
  *
+ * - `#root-container.light-theme`, indicates whether the current color scheme is light.
+ * - `#root-container.dark-theme`, indicates whether the current color scheme is dark.
  * - `#root-container.virtual-keyboard-opened`, on mobile devices if the virtual keyboard is open.
  * - `#root-container.horizontal-layout`, if the current layout is horizontal.
  * - `#root-container.vertical-layout`, if the current layout is horizontal.
  */
 export default class RootContainer extends FlexContainer<BasicWidget> {
 
+    private originalWindowHeight: number;
+
     constructor(isHorizontalLayout: boolean) {
         super(isHorizontalLayout ? "column" : "row");
 
+        this.originalWindowHeight = window.innerHeight ?? 0;
         this.id("root-widget");
         this.css("height", "100dvh");
     }
@@ -31,6 +36,8 @@ export default class RootContainer extends FlexContainer<BasicWidget> {
             window.visualViewport?.addEventListener("resize", () => this.#onMobileResize());
         }
 
+        this.#initTheme();
+        this.#setDeviceSpecificClasses();
         this.#setMaxContentWidth();
         this.#setMotion();
         this.#setShadows();
@@ -63,9 +70,24 @@ export default class RootContainer extends FlexContainer<BasicWidget> {
         }
     }
 
+    #initTheme() {
+        const colorSchemeChangeObserver = matchMedia("(prefers-color-scheme: dark)")
+        colorSchemeChangeObserver.addEventListener("change", () => this.#updateColorScheme());
+        this.#updateColorScheme();
+        
+        document.body.setAttribute("data-theme-id", options.get("theme"));
+    }
+
+    #updateColorScheme() {
+        const colorScheme = readCssVar(document.body, "theme-style").asString();
+        
+        document.body.classList.toggle("light-theme", colorScheme === "light");
+        document.body.classList.toggle("dark-theme", colorScheme === "dark");
+    }
+
     #onMobileResize() {
         const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
-        const windowHeight = window.innerHeight;
+        const windowHeight = Math.max(window.innerHeight, this.originalWindowHeight); // inner height changes when keyboard is opened, we need to compare with the original height to detect it.
 
         // If viewport is significantly smaller, keyboard is likely open
         const isKeyboardOpened = windowHeight - viewportHeight > 150;
@@ -115,6 +137,12 @@ export default class RootContainer extends FlexContainer<BasicWidget> {
         const correspondingLocale = LOCALES.find(l => l.id === locale);
         document.body.lang = locale;
         document.body.dir = correspondingLocale?.rtl ? "rtl" : "ltr";
+    }
+
+    #setDeviceSpecificClasses() {
+        if (isIOS()) {
+            document.body.classList.add("ios");
+        }
     }
 
     #initPWATopbarColor() {

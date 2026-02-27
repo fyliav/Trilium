@@ -14,7 +14,9 @@ export function reloadFrontendApp(reason?: string) {
     }
 
     if (isElectron()) {
-        dynamicRequire("@electron/remote").BrowserWindow.getFocusedWindow()?.reload();
+        for (const window of dynamicRequire("@electron/remote").BrowserWindow.getAllWindows()) {
+            window.reload();
+        }
     } else {
         window.location.reload();
     }

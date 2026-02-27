@@ -467,8 +467,10 @@ function checkHiddenSubtreeRecursively(parentNoteId: string, item: HiddenSubtree
             }
 
             // Ensure value is consistent.
-            if (attribute.value !== attrDef.value) {
-                note.setAttributeValueById(attribute.attributeId, attrDef.value);
+            if (attribute.value !== attrDef.value || attribute.type !== attrDef.type) {
+                attribute.type = attrDef.type;
+                attribute.value = attrDef.value ?? "";
+                attribute.save();
             }
         }
     }

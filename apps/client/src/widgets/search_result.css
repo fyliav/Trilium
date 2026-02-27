@@ -4,8 +4,8 @@
     contain: none !important;
 }
 
-.search-result-widget .note-list {
-    padding: 10px;
+.search-result-widget .note-list-wrapper {
+    margin-inline: var(--content-margin-inline);
 }
 
 .note-split.type-search .scrolling-container {

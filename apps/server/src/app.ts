@@ -88,7 +88,7 @@ export default async function buildApp() {
 
     const sessionParser = (await import("./routes/session_parser.js")).default;
     app.use(sessionParser);
-    app.use(favicon(path.join(assetsDir, "icon.ico")));
+    app.use(favicon(path.join(assetsDir, isDev ? "icon-dev.ico" : "icon.ico")));
 
     if (openID.isOpenIDEnabled())
         app.use(auth(openID.generateOAuthConfig()));

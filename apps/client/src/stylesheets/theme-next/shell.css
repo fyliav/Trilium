@@ -372,10 +372,6 @@ body[dir=ltr] #launcher-container {
 .calendar-dropdown-widget .calendar-header [data-calendar-input="month"] {
     --input-background-color: transparent;
     --menu-background-color: transparent;
-
-    text-align: center;
-    font-size: 1.4em;
-    font-weight: 300;
 }
 
 .calendar-dropdown-widget .calendar-header input:not(:focus) {
@@ -425,8 +421,6 @@ body[dir=ltr] #launcher-container {
 }
 
 .calendar-dropdown-widget .calendar-week span {
-    font-size: 0.85em;
-    font-weight: 500;
     color: var(--calendar-weekday-labels-color);
 }
 
@@ -689,9 +683,10 @@ body.layout-vertical.background-effects div.quick-search .dropdown-menu {
     padding-inline-start: 12px;
 }
 
-#left-pane span.fancytree-node.fancytree-active {
+#left-pane span.fancytree-node.fancytree-active,
+#left-pane span.fancytree-node.fancytree-active:hover {
     position: relative;
-    background: transparent !important;
+    background: transparent;
     color: var(--custom-color, var(--left-pane-item-selected-color));
 }
 
@@ -703,6 +698,14 @@ body.layout-vertical.background-effects div.quick-search .dropdown-menu {
         opacity: 1;
     }
 }
+
+/*
+ * .fancytree-node pseudo-elements:
+ *
+ *      - ::before: the active tree item decorator.
+ *      - ::after:  the selected tree item background. A pseudo-element is used instead of the
+ *                  element's background color, to allow alpha compositing for the hover state.
+ */
 
 #left-pane span.fancytree-node.fancytree-active::before {
     position: absolute;
@@ -716,6 +719,24 @@ body.layout-vertical.background-effects div.quick-search .dropdown-menu {
     border-radius: 6px;
     animation: left-pane-item-select 200ms ease-out;
     z-index: -1;
+}
+
+#left-pane span.fancytree-node.fancytree-selected {
+    --left-pane-item-selected-shadow-size: 4px;
+
+    position: relative;
+    background-color: transparent;
+    border-radius: 0;
+}
+
+#left-pane span.fancytree-node.fancytree-selected::after {
+    display: block;
+    position: absolute;
+    z-index: -2;
+    content: "";
+    inset: 0;
+    background: var(--selection-background-color);
+    animation: left-pane-item-select 100ms ease-out;
 }
 
 #left-pane span.fancytree-node.protected > span.fancytree-custom-icon {
@@ -780,7 +801,8 @@ body[dir=rtl] #left-pane span.fancytree-node.protected > span.fancytree-custom-i
     opacity: 0.5;
 }
 
-#left-pane .tree-item-button {
+#left-pane .tree-item-button,
+#left-pane span.fancytree-node.fancytree-selected .fancytree-custom-icon {
     margin-inline-end: 6px;
     border: unset;
     border-radius: 50%;
@@ -791,7 +813,8 @@ body[dir=rtl] #left-pane span.fancytree-node.protected > span.fancytree-custom-i
         box-shadow 200ms ease-out;
 }
 
-#left-pane .tree-item-button:hover {
+#left-pane .tree-item-button:hover,
+#left-pane span.fancytree-node.fancytree-selected .fancytree-custom-icon:hover {
     background: var(--left-pane-item-action-button-hover-background);
     box-shadow: var(--left-pane-item-action-button-hover-shadow);
     transition:
@@ -799,9 +822,40 @@ body[dir=rtl] #left-pane span.fancytree-node.protected > span.fancytree-custom-i
         box-shadow 100ms ease-in;
 }
 
-#left-pane span.fancytree-node.fancytree-active .tree-item-button:hover {
+#left-pane span.fancytree-node.fancytree-active .tree-item-button:hover,
+#left-pane span.fancytree-node.fancytree-active.fancytree-selected .fancytree-custom-icon:hover {
     box-shadow: var(--left-pane-item-selected-action-button-hover-shadow);
 }
+
+/* Selected item bulk action button */
+
+@keyframes bulk-action-button-blink {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: .3;
+    }
+}
+
+#left-pane span.fancytree-node.fancytree-selected .fancytree-custom-icon {
+    margin: 0;
+}
+
+#left-pane span.fancytree-node.fancytree-selected .fancytree-custom-icon::before {
+    border: 0;
+    font-size: .65em;
+}
+
+#left-pane span.fancytree-node.fancytree-selected:hover .fancytree-custom-icon:not(:hover)::before {
+    animation: bulk-action-button-blink 500ms linear infinite alternate;
+}
+
+#left-pane span.fancytree-node.fancytree-selected.protected .fancytree-custom-icon::after {
+    /* Protected note indicator */
+    display: none;
+}
+
 
 #context-menu-container {
     /* The context menu of the tree */

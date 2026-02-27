@@ -120,7 +120,6 @@ async function renderChildrenList($renderedContent: JQuery<HTMLElement>, note: F
         return;
     }
 
-    $renderedContent.css("padding", "10px");
     $renderedContent.addClass("text-with-ellipsis");
 
     // just load the first 10 child notes

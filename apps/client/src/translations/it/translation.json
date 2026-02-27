@@ -118,7 +118,7 @@
     "export_type_subtree": "Questa nota e tutti i suoi discendenti",
     "format_html": "HTML - raccomandato in quanto mantiene tutti i formati",
     "format_html_zip": "HTML in archivio ZIP - questo è raccomandato in quanto conserva tutta la formattazione.",
-    "format_markdown": "MArkdown - questo conserva la maggior parte della formattazione.",
+    "format_markdown": "Markdown: preserva la maggior parte della formattazione.",
     "export_type_single": "Solo questa nota, senza le sottostanti",
     "format_opml": "OPML - formato per scambio informazioni outline. Formattazione, immagini e files non sono inclusi.",
     "opml_version_1": "OPML v.1.0 - solo testo semplice",
@@ -592,7 +592,7 @@
     "collapseExpand": "collassa/espande il nodo",
     "notSet": "non impostato",
     "goBackForwards": "indietro/avanti nella cronologia",
-    "showJumpToNoteDialog": "mostra <a class=\"external\" href=\"https://triliumnext.github.io/Docs/Wiki/note-navigation.html#jump-to-note\">finestra di dialogo “Vai a”</a>",
+    "showJumpToNoteDialog": "mostra <a class=\"external\" href=\"https://triliumnext.github.io/Docs/Wiki/note-navigation.html#jump-to-note\">\"Vai a\"</a>",
     "title": "Scheda riassuntiva",
     "noteNavigation": "Nota navigazione",
     "scrollToActiveNote": "scorri fino alla nota attiva",
@@ -1715,7 +1715,8 @@
     "beta-feature": "Beta",
     "task-list": "Elenco delle attività",
     "new-feature": "Nuovo",
-    "collections": "Collezioni"
+    "collections": "Collezioni",
+    "ai-chat": "Chat con IA"
   },
   "protect_note": {
     "toggle-on": "Proteggi la nota",
@@ -1793,7 +1794,8 @@
   },
   "search_result": {
     "no_notes_found": "Non sono state trovate note per i parametri di ricerca specificati.",
-    "search_not_executed": "La ricerca non è stata ancora eseguita. Clicca sul pulsante \"Cerca\" qui sopra per visualizzare i risultati."
+    "search_not_executed": "La ricerca non è stata ancora eseguita.",
+    "search_now": "Cerca ora"
   },
   "spacer": {
     "configure_launchbar": "Configura Launchbar"
@@ -2020,7 +2022,9 @@
     "percentage": "%"
   },
   "pagination": {
-    "total_notes": "{{count}} note"
+    "total_notes": "{{count}} note",
+    "prev_page": "Pagina precedente",
+    "next_page": "Pagina successiva"
   },
   "collections": {
     "rendering_error": "Impossibile mostrare il contenuto a causa di un errore."

@@ -1679,7 +1679,8 @@
   },
   "search_result": {
     "no_notes_found": "Ní bhfuarthas aon nótaí do na paraiméadair chuardaigh tugtha.",
-    "search_not_executed": "Níl an cuardach curtha i gcrích fós. Cliceáil ar an gcnaipe \"Cuardaigh\" thuas chun na torthaí a fheiceáil."
+    "search_not_executed": "Níl an cuardach curtha i gcrích fós.",
+    "search_now": "Cuardaigh anois"
   },
   "spacer": {
     "configure_launchbar": "Cumraigh an Barra Seoladh"

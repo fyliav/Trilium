@@ -647,10 +647,10 @@ html .note-detail-editable-text :not(figure, .include-note, hr):first-child {
     font-weight: 600;
 }
 
-.ck-content hr {
-    margin: 5px 0;
-    height: 1px;
-    background-color: var(--main-border-color);
+:root .ck-content hr {
+    margin-block: 5px;
+    height: 0;
+    border: thin solid var(--main-border-color);
     opacity: 1;
 }
 

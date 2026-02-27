@@ -96,7 +96,8 @@ rules.table = {
       var columnCount = tableColCount(node);
       var emptyHeader = ''
       if (columnCount && !secondLineIsDivider) {
-        emptyHeader = '|' + '     |'.repeat(columnCount) + '\n' + '|'
+        // MD060 compact style: 2 spaces between pipes for empty cells
+        emptyHeader = '|' + '  |'.repeat(columnCount) + '\n' + '|'
         for (var columnIndex = 0; columnIndex < columnCount; ++columnIndex) {
           emptyHeader += ' ' + getBorder(getColumnAlignment(node, columnIndex)) + ' |';
         }
@@ -157,13 +158,15 @@ function isFirstTbody (element) {
   )
 }
 
+// Format table cells following MD060 compact style:
+// Each cell has 1 space padding on left and right (prefix + content + ' |').
+// Empty cells result in 2 spaces between pipes (1 left + 1 right padding).
 function cell (content, node = null, index = null) {
   if (index === null) index = indexOf.call(node.parentNode.childNodes, node)
   var prefix = ' '
   if (index === 0) prefix = '| '
   let filteredContent = content.trim().replace(/\n\r/g, '<br>').replace(/\n/g, "<br>");
   filteredContent = filteredContent.replace(/\|+/g, '\\|')
-  while (filteredContent.length < 3) filteredContent += ' ';
   if (node) filteredContent = handleColSpan(filteredContent, node, ' ');
   return prefix + filteredContent + ' |'
 }
@@ -259,7 +262,7 @@ function nodeParentTable(node) {
 function handleColSpan(content, node, emptyChar) {
   const colspan = node.getAttribute('colspan') || 1;
   for (let i = 1; i < colspan; i++) {
-    content += ' | ' + emptyChar.repeat(3);
+    content += ' |' + emptyChar;
   }
   return content
 }

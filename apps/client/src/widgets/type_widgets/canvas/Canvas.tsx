@@ -1,7 +1,7 @@
 import { Excalidraw } from "@excalidraw/excalidraw";
 import { TypeWidgetProps } from "../type_widget";
 import "@excalidraw/excalidraw/index.css";
-import { useNoteLabelBoolean, useTriliumOption } from "../../react/hooks";
+import { useColorScheme, useNoteLabelBoolean, useTriliumOption } from "../../react/hooks";
 import { useCallback, useMemo, useRef } from "preact/hooks";
 import { type ExcalidrawImperativeAPI, type AppState } from "@excalidraw/excalidraw/types";
 import options from "../../../services/options";
@@ -19,12 +19,9 @@ window.EXCALIDRAW_ASSET_PATH = `${window.location.pathname}/node_modules/@excali
 export default function Canvas({ note, noteContext }: TypeWidgetProps) {
     const apiRef = useRef<ExcalidrawImperativeAPI>(null);
     const [ isReadOnly ] = useNoteLabelBoolean(note, "readOnly");
-    const themeStyle = useMemo(() => {
-        const documentStyle = window.getComputedStyle(document.documentElement);
-        return documentStyle.getPropertyValue("--theme-style")?.trim() as AppState["theme"];
-    }, []);
+    const colorScheme = useColorScheme();
     const [ locale ] = useTriliumOption("locale");
-    const persistence = useCanvasPersistence(note, noteContext, apiRef, themeStyle, isReadOnly);
+    const persistence = useCanvasPersistence(note, noteContext, apiRef, colorScheme, isReadOnly);
 
     /** Use excalidraw's native zoom instead of the global zoom. */
     const onWheel = useCallback((e: MouseEvent) => {
@@ -54,7 +51,7 @@ export default function Canvas({ note, noteContext }: TypeWidgetProps) {
             <div className="excalidraw-wrapper">
                 <Excalidraw
                     excalidrawAPI={api => apiRef.current = api}
-                    theme={themeStyle}
+                    theme={colorScheme}
                     viewModeEnabled={isReadOnly || options.is("databaseReadonly")}
                     zenModeEnabled={false}
                     isCollaborating={false}

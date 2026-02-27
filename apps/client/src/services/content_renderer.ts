@@ -192,7 +192,7 @@ function renderFile(entity: FNote | FAttachment, type: string, $renderedContent:
         throw new Error(`Can't recognize entity type of '${entity}'`);
     }
 
-    const $content = $('<div style="display: flex; flex-direction: column; height: 100%;">');
+    const $content = $('<div style="display: flex; flex-direction: column; height: 100%; justify-content: end;">');
 
     if (type === "pdf") {
         const $pdfPreview = $('<iframe class="pdf-preview" style="width: 100%; flex-grow: 100;"></iframe>');

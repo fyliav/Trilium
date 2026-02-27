@@ -1,30 +1,180 @@
-:root {
-    color-scheme: var(--tn-theme-style);
+/* #region General */
 
-    --body-bg-color: transparent;
-    --toolbar-bg-color: transparent;
+:root {    
     --main-color: var(--tn-main-text-color);
+    --body-bg-color: transparent;
     --toolbar-border-color: var(--tn-main-border-color);
+    --toolbar-icon-bg-color: var(--tn-main-text-color);
+    --toolbar-bg-color: transparent;
     --toolbar-icon-opacity: 1;
+    --toggled-btn-bg-color: var(--tn-hover-item-background-color);
+    --doorhanger-bg-color: var(--tn-menu-background-color);
+    --doorhanger-separator-color: var(--tn-main-border-color);
 
     --page-margin: 12px auto;
     --spreadHorizontalWrapped-margin-LR: 4px;
+
+    color-scheme: var(--tn-theme-style);
 }
 
-.pdfViewer {
-    .page,
-    .page > .canvasWrapper,
-    .page > .canvasWrapper > canvas {
-        border-radius: 6px;
-    }
+:root button,
+:root dialog,
+:root #toolbarContainer,
+:root .toolbarButton,
+:root #scaleSelect,
+:root .toolbarButtonWithContainer .editorParamsToolbar .editorParamsLabel,
+:root #toolbarContainer #toolbarViewer input,
+:root #editorUndoBar,
+:root .dialogButton {
+    font-family: "Inter";
+}
 
-    .page {
-        border: 1px solid var(--tn-main-border-color);
-        box-shadow: 7px 7px 15px #00000010;
+#secondaryToolbar,
+#documentPropertiesDialog,
+#findbar.doorHanger,
+.doorHangerRight,
+#printServiceDialog {
+    border: 1px solid var(--tn-dropdown-border-color);
+    border-radius: var(--tn-dropdown-border-radius);
+    background-color: var(--tn-menu-background-color);
+    padding: var(--tn-menu-padding-size);
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, var(--tn-dropdown-shadow-opacity));
+    backdrop-filter: var(--tn-dropdown-backdrop-filter);
+}
+
+.doorHangerRight,
+.doorHangerLeft,
+.doorHanger {
+    &::after, &::before {
+        display: none;
     }
 }
+
+:root .toggle-button {
+    --toggle-border-color: transparent;
+    --toggle-background-color: var(--tn-input-background-color);
+    --toggle-background-color-hover: var(--toggle-background-color);
+    --toggle-dot-background-color: var(--tn-input-text-color);
+    --toggle-background-color-pressed: var(--tn-input-text-color);
+    --toggle-background-color-pressed-hover: var(--toggle-background-color-pressed);
+    cursor: pointer;
+}
+
+:root .colorPicker {
+    --hover-outline-color: var(--tn-input-focus-outline-color);
+    --selected-outline-color: var(--tn-main-text-color);
+}
+
+/* #endregion */
 
 /* #region Toolbar */
+
+.toolbarButton {
+    &:not(.labeled):active::before {
+        transform: scale(.85) !important;
+    }
+
+    &:hover {
+        background: var(--tn-hover-item-background-color);
+        border-radius: 6px;
+        color: var(--tn-hover-item-text-color);
+    }
+
+    &.toggled::before {
+        color: var(--tn-menu-item-icon-color);
+    }
+}
+
+#findbar {
+}
+
+#scaleSelectContainer {
+    --dropdown-btn-bg-color: transparent;
+    --button-hover-color: var(--tn-hover-item-background-color);
+    border-radius: 6px;
+
+    select:focus {
+        background: var(--tn-main-background-color);
+    }
+}
+
+/* Toolbar editor dropdowns */
+:root .editorParamsToolbar:not(.menu),
+:root #highlightParamsToolbarContainer {
+    padding: 10px 16px;
+}
+
+/* Toolbar dropdowns */
+:root .editorParamsToolbar {
+    .menu {
+        padding: 8px;
+    }
+
+    .editorParamsToolbarContainer {
+        padding: 0;
+    }
+}
+
+/* Overflow menu */
+:root #secondaryToolbar {
+    --toolbar-icon-bg-color: var(--tn-menu-item-icon-color);
+    --toolbar-icon-hover-bg-color: var(--tn-menu-item-icon-color);
+    --toggled-btn-bg-color: transparent;
+    --toggled-btn-color: currentColor;
+    --doorhanger-icon-opacity: 1;
+    padding: var(--tn-menu-padding-size);
+    
+    .toolbarButton.labeled {
+        color: var(--tn-menu-text-color);
+
+        font-size: 13px;
+    }
+}
+
+/* Horizontal menu dividers */
+:root #highlightParamsToolbarContainer #editorHighlightVisibility .divider,
+:root .horizontalToolbarSeparator {
+    position: relative;
+    overflow: visible;
+    background: unset;
+    border: none;
+
+    &:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        border-top: 1px solid var(--tn-main-border-color);
+    }
+}
+
+/* Radio menu items */
+#cursorToolButtons .toolbarButton,
+#scrollModeButtons .toolbarButton,
+#spreadModeButtons .toolbarButton {
+    --toggled-hover-active-btn-color: var(--tn-hover-item-background-color);
+    position: relative;
+
+    &::after {
+        display: block;
+        content: "";
+        position: absolute;
+        right: 0;
+        width: 2em;
+        height: 100%;
+        /* https://pictogrammers.com/library/mdi/icon/radiobox-blank/ */
+        mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3ctitle%3eradiobox-blank%3c/title%3e%3cpath d='M12%2c20A8%2c8 0 0%2c1 4%2c12A8%2c8 0 0%2c1 12%2c4A8%2c8 0 0%2c1 20%2c12A8%2c8 0 0%2c1 12%2c20M12%2c2A10%2c10 0 0%2c0 2%2c12A10%2c10 0 0%2c0 12%2c22A10%2c10 0 0%2c0 22%2c12A10%2c10 0 0%2c0 12%2c2Z' /%3e%3c/svg%3e");
+        mask-size: 16px;
+        mask-repeat: no-repeat;
+        mask-position: center center;
+        background-color: var(--tn-main-text-color);
+    }
+
+    &.toggled::after {
+        /* https://pictogrammers.com/library/mdi/icon/radiobox-marked/ */
+        mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3ctitle%3eradiobox-marked%3c/title%3e%3cpath d='M12%2c20A8%2c8 0 0%2c1 4%2c12A8%2c8 0 0%2c1 12%2c4A8%2c8 0 0%2c1 20%2c12A8%2c8 0 0%2c1 12%2c20M12%2c2A10%2c10 0 0%2c0 2%2c12A10%2c10 0 0%2c0 12%2c22A10%2c10 0 0%2c0 22%2c12A10%2c10 0 0%2c0 12%2c2M12%2c7A5%2c5 0 0%2c0 7%2c12A5%2c5 0 0%2c0 12%2c17A5%2c5 0 0%2c0 17%2c12A5%2c5 0 0%2c0 12%2c7Z' /%3e%3c/svg%3e");
+    }
+}
 
 /* Permanently removed buttons */
 #viewsManagerToggleButton,
@@ -43,9 +193,50 @@
 
 /* #region Properties Dialog */
 
-/* Hide irrelevant properties */
-#documentPropertiesDialog > .row:has(#fileNameField),
-#documentPropertiesDialog > .row:has(#linearizedField) {
+#documentPropertiesDialog {
+    --separator-color: transparent;
+    
+    user-select: none;
+    padding: 1em;
+
+    .row {
+        line-height: 1.5;
+
+        > span {
+            font-weight: bold;
+            opacity: .5;
+        }
+
+        > p {
+            user-select: all;
+        }
+    }
+
+    /* Hide irrelevant properties */
+    > .row:has(#fileNameField),
+    > .row:has(#linearizedField) {
+        display: none;
+    }
+}
+
+/* #endregion */
+
+/* #region Viewer Area */
+
+.pdfViewer {
+    .page,
+    .page > .canvasWrapper,
+    .page > .canvasWrapper > canvas {
+        border-radius: 6px;
+    }
+
+    .page {
+        border: 1px solid var(--tn-main-border-color);
+        box-shadow: 7px 7px 15px #00000010;
+    }
+}
+
+#viewsManager {
     display: none;
 }
 

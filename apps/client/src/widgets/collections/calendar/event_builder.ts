@@ -1,12 +1,14 @@
 import { EventInput, EventSourceFuncArg, EventSourceInput } from "@fullcalendar/core/index.js";
+import { dayjs } from "@triliumnext/commons";
 import clsx from "clsx";
+import { start } from "repl";
 import * as rruleLib from 'rrule';
 
 import FNote from "../../../entities/fnote";
 import froca from "../../../services/froca";
 import server from "../../../services/server";
 import toastService from "../../../services/toast";
-import { formatDateToLocalISO, getCustomisableLabel, getMonthsInDateRange, offsetDate } from "./utils";
+import { getCustomisableLabel, getMonthsInDateRange } from "./utils";
 
 interface Event {
     startDate: string,
@@ -127,9 +129,10 @@ export async function buildEvent(note: FNote, { startDate, endDate, startTime, e
 
         startDate = (startTime ? `${startDate}T${startTime}:00` : startDate);
         if (!startTime) {
-            const endDateOffset = offsetDate(endDate ?? startDate, 1);
-            if (endDateOffset) {
-                endDate = formatDateToLocalISO(endDateOffset);
+            if (endDate) {
+                endDate = dayjs(endDate).add(1, "day").format("YYYY-MM-DD");
+            } else if (startDate) {
+                endDate = dayjs(startDate).add(1, "day").format("YYYY-MM-DD");
             }
         }
 
@@ -150,7 +153,7 @@ export async function buildEvent(note: FNote, { startDate, endDate, startTime, e
 
         if (recurrence) {
             // Generate rrule string
-            const rruleString = `DTSTART:${startDate.replace(/[-:]/g, "")}\n${recurrence}`;
+            const rruleString = `DTSTART:${dayjs(startDate).format("YYYYMMDD[T]HHmmss")}\n${recurrence}`;
 
             // Validate rrule string
             let rruleValid = true;
@@ -164,13 +167,11 @@ export async function buildEvent(note: FNote, { startDate, endDate, startTime, e
                 delete eventData.end;
                 eventData.rrule = rruleString;
                 if (endDate){
-                    const diffMs = new Date(endDate).getTime() - new Date(startDate).getTime();
-                    const hours = Math.floor(diffMs / 3600000);
-                    const minutes = Math.floor((diffMs / 60000) % 60);
-                    eventData.duration = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+                    const duration = dayjs.duration(dayjs(endDate).diff(dayjs(startDate)));
+                    eventData.duration = duration.format("HH:mm");
                 }
             } else {
-                throw new Error(`Note "${note.noteId} ${note.title}" has an invalid #recurrence string. Excluding...`);
+                throw new Error(`Note "${note.noteId} ${note.title}" has an invalid #recurrence string ${recurrence}. Excluding...`);
             }
         }
         events.push(eventData);

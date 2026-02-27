@@ -103,6 +103,32 @@ This will result in:
 
 When not used in a Journal, the calendar is recursive. That is, it will look for events not just in its child notes but also in the children of these child notes.
 
+## Recurrence
+
+The built in calendar view also supports repeating tasks. If a child note of the calendar has a #recurrence label with a valid recurrence, that event will repeat on the calendar according to the recurrence string. 
+
+For example, to make a note repeat on the calendar:
+
+*   Every Day - `#recurrence="FREQ=DAILY;INTERVAL=1"`
+*   Every 3 days - `#recurrence="FREQ=DAILY;INTERVAL=3"`
+*   Every week - `#recurrence="FREQ=WEEKLY;INTERVAL=1"`
+*   Every 2 weeks on Monday, Wednesday and Friday - `#recurrence="FREQ=WEEKLY;INTERVAL=2;BYDAY=MO,WE,FR"`
+*   Every 3 months - `#recurrence="FREQ=MONTHLY;INTERVAL=3"`
+*   Every 2 months on the First Sunday - `#recurrence="FREQ=MONTHLY;INTERVAL=2;BYDAY=1SU"`
+*   Every month on the Last Friday - `#recurrence="FREQ=MONTHLY;INTERVAL=1;BYDAY=-1FR"`
+*   And so on.
+
+For other examples of valid `RRULE` strings see [https://icalendar.org/rrule-tool.html](https://icalendar.org/rrule-tool.html)
+
+Note that the recurrence string does not include the `DTSTART` attribute as defined in the iCAL specifications. This is derived directly from the `startDate` and `startTime` attributes
+
+If you want to override the label the calendar uses to fetch the recurrence string, you can use the `#calendar:recurrence` attribute. For example, you can set `#calendar:recurrence=taskRepeats`. Then you can set your recurrence string like `#taskRepeats="FREQ=DAILY;INTERVAL=1"`
+
+Also note that the recurrence label can be made promoted as with the start and end dates. 
+
+> [!WARNING]
+> If the recurrence string is not valid, a toast will be shown with the note ID and title of the note with the erroneous recurrence message. This note will not be added to the calendar
+
 ## Use-cases
 
 ### Using with the Journal / calendar

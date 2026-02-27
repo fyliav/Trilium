@@ -294,6 +294,65 @@
 <p>When not used in a Journal, the calendar is recursive. That is, it will
   look for events not just in its child notes but also in the children of
   these child notes.</p>
+<p>&nbsp;</p>
+<h2>Recurrence</h2>
+<p>The built in calendar view also supports repeating tasks. If a child note
+  of the calendar has a #recurrence label with a valid recurrence, that event
+  will repeat on the calendar according to the recurrence string.&nbsp;</p>
+<p>For example, to make a note repeat on the calendar:</p>
+<ul>
+  <li>
+    <p>Every Day - <code spellcheck="false">#recurrence="FREQ=DAILY;INTERVAL=1"</code>
+    </p>
+  </li>
+  <li>
+    <p>Every 3 days - <code spellcheck="false">#recurrence="FREQ=DAILY;INTERVAL=3"</code>
+    </p>
+  </li>
+  <li>
+    <p>Every week - <code spellcheck="false">#recurrence="FREQ=WEEKLY;INTERVAL=1"</code>
+    </p>
+  </li>
+  <li>
+    <p>Every 2 weeks on Monday, Wednesday and Friday - <code spellcheck="false">#recurrence="FREQ=WEEKLY;INTERVAL=2;BYDAY=MO,WE,FR"</code>
+    </p>
+  </li>
+  <li>
+    <p>Every 3 months - <code spellcheck="false">#recurrence="FREQ=MONTHLY;INTERVAL=3"</code>
+    </p>
+  </li>
+  <li>
+    <p>Every 2 months on the First Sunday - <code spellcheck="false">#recurrence="FREQ=MONTHLY;INTERVAL=2;BYDAY=1SU"</code>
+    </p>
+  </li>
+  <li>
+    <p>Every month on the Last Friday - <code spellcheck="false">#recurrence="FREQ=MONTHLY;INTERVAL=1;BYDAY=-1FR"</code>
+    </p>
+  </li>
+  <li>
+    <p>And so on.</p>
+  </li>
+</ul>
+<p>For other examples of valid <code spellcheck="false">RRULE</code> strings
+  see <a href="https://icalendar.org/rrule-tool.html">https://icalendar.org/rrule-tool.html</a>
+</p>
+<p>Note that the recurrence string does not include the <code spellcheck="false">DTSTART</code> attribute
+  as defined in the iCAL specifications. This is derived directly from the
+  <code
+  spellcheck="false">startDate</code>and <code spellcheck="false">startTime</code> attributes</p>
+<p>If you want to override the label the calendar uses to fetch the recurrence
+  string, you can use the <code spellcheck="false">#calendar:recurrence</code> attribute.
+  For example, you can set <code spellcheck="false">#calendar:recurrence=taskRepeats</code>.
+  Then you can set your recurrence string like <code spellcheck="false">#taskRepeats="FREQ=DAILY;INTERVAL=1"</code>
+</p>
+<p>Also note that the recurrence label can be made promoted as with the start
+  and end dates.&nbsp;</p>
+<aside class="admonition warning">
+  <p>If the recurrence string is not valid, a toast will be shown with the
+    note ID and title of the note with the erroneous recurrence message. This
+    note will not be added to the calendar</p>
+</aside>
+<p>&nbsp;</p>
 <h2>Use-cases</h2>
 <h3>Using with the Journal / calendar</h3>
 <p>It is possible to integrate the calendar view into the Journal with day

@@ -326,6 +326,9 @@ importers:
       reveal.js:
         specifier: 5.2.1
         version: 5.2.1
+      rrule:
+        specifier: 2.8.1
+        version: 2.8.1
       svg-pan-zoom:
         specifier: 3.6.2
         version: 3.6.2

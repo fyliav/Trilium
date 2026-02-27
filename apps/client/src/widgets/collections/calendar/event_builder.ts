@@ -1,9 +1,11 @@
 import { EventInput, EventSourceFuncArg, EventSourceInput } from "@fullcalendar/core/index.js";
 import clsx from "clsx";
+import * as rruleLib from 'rrule';
 
 import FNote from "../../../entities/fnote";
 import froca from "../../../services/froca";
 import server from "../../../services/server";
+import toastService from "../../../services/toast";
 import { formatDateToLocalISO, getCustomisableLabel, getMonthsInDateRange, offsetDate } from "./utils";
 
 interface Event {
@@ -122,13 +124,30 @@ export async function buildEvent(note: FNote, { startDate, endDate, startTime, e
         }
 
         if (recurrence) {
-            delete eventData.end;
-            eventData.rrule = `DTSTART:${startDate.replace(/[-:]/g, "")}\n${recurrence}`;
-            if (endDate){
-                const diffMs = new Date(endDate).getTime() - new Date(startDate).getTime();
-                const hours = Math.floor(diffMs / 3600000);
-                const minutes = Math.floor((diffMs / 60000) % 60);
-                eventData.duration = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+            // Generate rrule string
+            const rruleString = `DTSTART:${startDate.replace(/[-:]/g, "")}\n${recurrence}`;
+
+            // Validate rrule string
+            let rruleValid = true;
+            try {
+                rruleLib.rrulestr(rruleString, { forceset: true }) as rruleLib.RRuleSet;
+            } catch {
+                rruleValid = false;
+            }
+
+            if (rruleValid) {
+                delete eventData.end;
+                eventData.rrule = rruleString;
+                if (endDate){
+                    const diffMs = new Date(endDate).getTime() - new Date(startDate).getTime();
+                    const hours = Math.floor(diffMs / 3600000);
+                    const minutes = Math.floor((diffMs / 60000) % 60);
+                    eventData.duration = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+                }
+            } else {
+                const errorMessage = `Note "${note.noteId} ${note.title}" has an invalid #recurrence string. This note will not recur.`;
+                toastService.showError(errorMessage);
+                console.error(errorMessage);
             }
         }
         events.push(eventData);

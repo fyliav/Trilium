@@ -33,7 +33,8 @@
 #documentPropertiesDialog,
 #findbar.doorHanger,
 .doorHangerRight,
-#printServiceDialog {
+#printServiceDialog,
+:root :is(.annotationEditorLayer :is(.freeTextEditor, .inkEditor, .stampEditor, .highlightEditor, .signatureEditor), .textLayer) .editToolbar {
     border: 1px solid var(--tn-dropdown-border-color);
     border-radius: var(--tn-dropdown-border-radius);
     background-color: var(--tn-menu-background-color);
@@ -85,7 +86,24 @@
     }
 }
 
-#findbar {
+:root #findbar {
+    --toolbar-height: 40px;
+    padding: 0 4px;
+
+    .toggleButton.toolbarLabel,
+    .toolbarButton {
+        height: calc(var(--toolbar-height) - 12px);
+        padding-inline: 10px;
+        border-radius: 6px;
+        aspect-ratio: unset;
+    }
+
+    .toggleButton.toolbarLabel {
+        --main-color: var(--tn-ck-color-text);
+        --button-hover-color: var(--tn-hover-item-background-color);
+        --toggled-btn-bg-color: var(--tn-ck-editor-toolbar-button-on-background);
+        --toggled-btn-color: var(--tn-ck-editor-toolbar-button-on-color);
+    }
 }
 
 #scaleSelectContainer {

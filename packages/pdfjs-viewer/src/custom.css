@@ -101,25 +101,49 @@ input {
 
 /* #region Toolbar */
 
+#toolbarContainer {
+    padding-inline: 12px;
+}
+
 .toolbarButton {
+    border-radius: 6px;
+
     &:not(.labeled):active::before {
         transform: scale(.85) !important;
     }
 
     &:hover {
         background: var(--tn-hover-item-background-color);
-        border-radius: 6px;
         color: var(--tn-hover-item-text-color);
     }
 
-    &.toggled::before {
-        color: var(--tn-menu-item-icon-color);
+    &.toggled {
+        /* Icon-only button */
+        &:not(.labeled) {
+            background: var(--tn-ck-editor-toolbar-button-on-background);
+
+            &&::before {
+                background: var(--tn-ck-editor-toolbar-button-on-color);
+            }
+        }
+
+        &::before {
+            color: var(--tn-menu-item-icon-color);
+        }
     }
+}
+.verticalToolbarSeparator,
+.splitToolbarButtonSeparator {
+    --separator-color: transparent;
+}
+
+.verticalToolbarSeparator {
+    margin-inline: 4px;
 }
 
 :root #findbar {
     --toolbar-height: 40px;
-    
+
     padding: 0 4px;
 
     /* Search input */

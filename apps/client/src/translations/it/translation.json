@@ -519,7 +519,7 @@
     "custom_name_label": "Nome del motore di ricerca personalizzato",
     "custom_name_placeholder": "Personalizza il nome del motore di ricerca",
     "custom_url_label": "L'URL del motore di ricerca personalizzato deve includere {keyword} come segnaposto per il termine di ricerca.",
-    "custom_url_placeholder": "Personalizza l'url del motore di ricerca"
+"custom_url_placeholder": "Personalizza l'URL del motore di ricerca"
   },
   "sql_table_schemas": {
     "tables": "Tabelle"

@@ -12,40 +12,6 @@ const FONTS: FontDefinition[] = [
     {name: "Inter", url: Inter},
 ]
 
-const VARIABLE_WHITELIST = new Set([
-    "root-background",
-    "main-background-color",
-    "main-border-color",
-    "main-text-color",
-    "theme-style",
-    "menu-background-color",
-    "dropdown-backdrop-filter",
-    "dropdown-border-radius",
-    "dropdown-border-color",
-    "dropdown-shadow-opacity",
-    "menu-padding-size",
-    "menu-text-color",
-    "hover-item-background-color",
-    "hover-item-text-color",
-    "menu-item-icon-color",
-    "input-focus-outline-color",
-    "input-background-color",
-    "input-text-color",
-    "ck-editor-toolbar-button-on-background",
-    "ck-editor-toolbar-button-on-color",
-    "input-text-color",
-    "input-background-color",
-    "input-hover-background",
-    "input-hover-color",
-    "input-focus-background",
-    "input-focus-color",
-    "input-focus-outline-color",
-    "input-placeholder-color",
-    "input-selection-background",
-    "input-selection-text-color",
-    "dropdown-item-icon-destructive-color"
-]);
-
 interface PdfViewerProps extends Pick<HTMLAttributes<HTMLIFrameElement>, "tabIndex"> {
     iframeRef?: RefObject<HTMLIFrameElement>;
     /** Note: URLs are relative to /pdfjs/web. */
@@ -119,7 +85,7 @@ function getRootCssVariables() {
 
     for (let i = 0; i < styles.length; i++) {
         const prop = styles[i];
-        if (prop.startsWith('--') && VARIABLE_WHITELIST.has(prop.substring(2))) {
+        if (prop.startsWith('--')) {
             vars[`--tn-${prop.substring(2)}`] = styles.getPropertyValue(prop).trim();
         }
     }

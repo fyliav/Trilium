@@ -66,6 +66,37 @@
     --selected-outline-color: var(--tn-main-text-color);
 }
 
+/* Text boxes */
+input {
+    --field-border-color: transparent;
+    --field-bg-color: var(--tn-input-background-color);
+    --field-color: var(--tn-input-text-color);
+    --input-horizontal-padding: 8px;
+
+    border-radius: 4px !important;
+
+    &:hover {
+        --field-bg-color: var(--tn-input-hover-background);
+        --field-color: var(--tn-input-hover-color);
+    }
+
+    &:focus {
+        border-color: transparent !important;
+        outline: 2px solid var(--tn-input-focus-outline-color);
+        --field-bg-color: var(--tn-input-focus-background);
+        --field-color: var(--tn-input-focus-color);
+    }
+
+    &::placeholder {
+        color: var(--tn-input-placeholder-color)
+    }
+
+    &::selection {
+        background-color: var(--tn-input-selection-background);
+        color: var(--tn-input-selection-text-color);
+    }
+}
+
 /* #endregion */
 
 /* #region Toolbar */

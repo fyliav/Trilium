@@ -33,6 +33,16 @@ const VARIABLE_WHITELIST = new Set([
     "input-text-color",
     "ck-editor-toolbar-button-on-background",
     "ck-editor-toolbar-button-on-color",
+    "input-text-color",
+    "input-background-color",
+    "input-hover-background",
+    "input-hover-color",
+    "input-focus-background",
+    "input-focus-color",
+    "input-focus-outline-color",
+    "input-placeholder-color",
+    "input-selection-background",
+    "input-selection-text-color"
 ]);
 
 interface PdfViewerProps extends Pick<HTMLAttributes<HTMLIFrameElement>, "tabIndex"> {

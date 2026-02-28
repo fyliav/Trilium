@@ -119,8 +119,21 @@ input {
 
 :root #findbar {
     --toolbar-height: 40px;
+    
     padding: 0 4px;
 
+    /* Search input */
+    .loadingInput {
+        margin-inline-end: 8px;
+    }
+
+    /* Search input - no results */
+    #findInputContainer #findInput[data-status="notFound"] {
+        --tn-input-focus-outline-color: var(--tn-dropdown-item-icon-destructive-color);
+        background: inherit;
+    }
+
+    /* Option buttons */
     .toggleButton.toolbarLabel,
     .toolbarButton {
         height: calc(var(--toolbar-height) - 12px);
@@ -129,11 +142,25 @@ input {
         aspect-ratio: unset;
     }
 
+    /* Toggable option buttons */
     .toggleButton.toolbarLabel {
         --main-color: var(--tn-ck-color-text);
         --button-hover-color: var(--tn-hover-item-background-color);
         --toggled-btn-bg-color: var(--tn-ck-editor-toolbar-button-on-background);
         --toggled-btn-color: var(--tn-ck-editor-toolbar-button-on-color);
+    }
+
+    /* Search status text */
+    #findbarMessageContainer #findResultsCount,
+    #findMsg {
+        background-color: transparent;
+        color: var(--tn-main-text-color);
+        opacity: .5;
+    };
+
+    /* Not found message */
+    #findMsg[data-status="notFound"] {
+        color: var(--tn-dropdown-item-icon-destructive-color);
     }
 }
 

@@ -42,7 +42,8 @@ const VARIABLE_WHITELIST = new Set([
     "input-focus-outline-color",
     "input-placeholder-color",
     "input-selection-background",
-    "input-selection-text-color"
+    "input-selection-text-color",
+    "dropdown-item-icon-destructive-color"
 ]);
 
 interface PdfViewerProps extends Pick<HTMLAttributes<HTMLIFrameElement>, "tabIndex"> {

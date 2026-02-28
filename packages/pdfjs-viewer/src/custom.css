@@ -20,6 +20,14 @@
     font-size: 16px;
 }
 
+body.read-only-document {
+    /* TODO: find a more elegant way to display a PDF in a read only view */
+    --toolbar-height: 0;
+    .toolbar {
+        display: none;
+    }
+}
+
 :root button,
 :root dialog,
 :root #toolbarContainer,

@@ -16,6 +16,8 @@ import protectedSessionHolder from "./protected_session_holder.js";
 import renderService from "./render.js";
 import { applySingleBlockSyntaxHighlight } from "./syntax_highlight.js";
 import utils, { getErrorMessage } from "./utils.js";
+import PdfViewer from "../widgets/type_widgets/file/PdfViewer";
+import { h, render } from "preact";
 
 let idCounter = 1;
 
@@ -195,10 +197,13 @@ function renderFile(entity: FNote | FAttachment, type: string, $renderedContent:
     const $content = $('<div style="display: flex; flex-direction: column; height: 100%; justify-content: end;">');
 
     if (type === "pdf") {
-        const $pdfPreview = $('<iframe class="pdf-preview" style="width: 100%; flex-grow: 100;"></iframe>');
-        $pdfPreview.attr("src", openService.getUrlForDownload(`pdfjs/web/viewer.html?file=../../api/${entityType}/${entityId}/open`));
+        const url = `../../api/${entityType}/${entityId}/open`;
+        const $viewer = $("<div>");
+        render(h(PdfViewer, {pdfUrl: url, editable: false}), $viewer.get(0)!);
 
-        $content.append($pdfPreview);
+        $content.append($viewer);
+
+
     } else if (type === "audio") {
         const $audioPreview = $("<audio controls></audio>")
             .attr("src", openService.getUrlForDownload(`api/${entityType}/${entityId}/open-partial`))

@@ -234,7 +234,7 @@
     }
 
     &.type-pdf {
-        iframe {
+        div {
             height: 50vh;
         }
 

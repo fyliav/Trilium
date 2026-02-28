@@ -519,7 +519,7 @@
     "custom_name_label": "Nome del motore di ricerca personalizzato",
     "custom_name_placeholder": "Personalizza il nome del motore di ricerca",
     "custom_url_label": "L'URL del motore di ricerca personalizzato deve includere {keyword} come segnaposto per il termine di ricerca.",
-    "custom_url_placeholder": "Personalizza l'URL del motore di ricerca"
+"custom_url_placeholder": "Personalizza l'URL del motore di ricerca"
   },
   "sql_table_schemas": {
     "tables": "Tabelle"
@@ -592,7 +592,7 @@
     "collapseExpand": "collassa/espande il nodo",
     "notSet": "non impostato",
     "goBackForwards": "indietro/avanti nella cronologia",
-    "showJumpToNoteDialog": "mostra <a class=\"external\" href=\"https://triliumnext.github.io/Docs/Wiki/note-navigation.html#jump-to-note\">\"Vai a\"</a>",
+    "showJumpToNoteDialog": "mostra <a class=\"external\" href=\"https://triliumnext.github.io/Docs/Wiki/note-navigation.html#jump-to-note\">finestra \"Vai a\"</a>",
     "title": "Scheda riassuntiva",
     "noteNavigation": "Nota navigazione",
     "scrollToActiveNote": "scorri fino alla nota attiva",

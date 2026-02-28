@@ -261,7 +261,9 @@
     "percentage": "%"
   },
   "pagination": {
-    "total_notes": "{{count}} notatek"
+    "total_notes": "{{count}} notatek",
+    "prev_page": "Poprzednia strona",
+    "next_page": "Następna strona"
   },
   "collections": {
     "rendering_error": "Nie można wyświetlić zawartości z powodu błędu."
@@ -737,7 +739,8 @@
     "raster": "Raster",
     "vector_light": "Wektor (Jasny)",
     "vector_dark": "Wektor (Ciemny)",
-    "show-scale": "Pokaż skalę"
+    "show-scale": "Pokaż skalę",
+    "show-labels": "Pokaż nazwy znaczników"
   },
   "table_context_menu": {
     "delete_row": "Usuń wiersz"
@@ -1232,7 +1235,7 @@
     "no_attachments": "Ta notatka nie ma załączników."
   },
   "book": {
-    "no_children_help": "Ta kolekcja nie posiada żadnych notatek podrzędnych, więc nie ma nic do wyświetlenia. Zobacz <a href=\"https://triliumnext.github.io/Docs/Wiki/book-note.html\">wiki</a> po szczegóły.",
+    "no_children_help": "Ta kolekcja nie zawiera notatek podrzędnych, więc nie ma nic do wyświetlenia.",
     "drag_locked_title": "Zablokowane do edycji",
     "drag_locked_message": "Przeciąganie niedozwolone, ponieważ kolekcja jest zablokowana do edycji."
   },
@@ -1653,7 +1656,8 @@
     "description": "Opis",
     "reload_app": "Przeładuj aplikację, aby zastosować zmiany",
     "set_all_to_default": "Ustaw wszystkie skróty na domyślne",
-    "confirm_reset": "Czy na pewno chcesz zresetować wszystkie skróty klawiszowe do domyślnych?"
+    "confirm_reset": "Czy na pewno chcesz zresetować wszystkie skróty klawiszowe do domyślnych?",
+    "no_results": "Nie znaleziono skrótów pasujących do '{{filter}}'"
   },
   "spellcheck": {
     "title": "Sprawdzanie pisowni",
@@ -1860,7 +1864,9 @@
     "print_report_collection_content_few": "Nie można wydrukować {{count}} notatek w kolekcji, ponieważ nie są one obsługiwane lub są chronione.",
     "print_report_collection_content_many": "Nie można wydrukować {{count}} notatek w kolekcji, ponieważ nie są one obsługiwane lub są chronione.",
     "print_report_collection_details_button": "Zobacz szczegóły",
-    "print_report_collection_details_ignored_notes": "Zignorowane notatki"
+    "print_report_collection_details_ignored_notes": "Zignorowane notatki",
+    "print_report_error_title": "Nie udało się wydrukować",
+    "print_report_stack_trace": "Ślad stosu"
   },
   "note_title": {
     "placeholder": "wpisz tytuł notatki tutaj...",
@@ -1875,7 +1881,8 @@
   },
   "search_result": {
     "no_notes_found": "Nie znaleziono notatek dla podanych parametrów wyszukiwania.",
-    "search_not_executed": "Wyszukiwanie nie zostało jeszcze wykonane. Kliknij przycisk \"Szukaj\" powyżej, aby zobaczyć wyniki."
+    "search_not_executed": "Nie przeprowadzono jeszcze wyszukiwania.",
+    "search_now": "Szukaj teraz"
   },
   "spacer": {
     "configure_launchbar": "Konfiguruj pasek szybkiego dostępu"
@@ -2145,5 +2152,49 @@
   },
   "bookmark_buttons": {
     "bookmarks": "Zakładki"
+  },
+  "render": {
+    "setup_title": "Wyświetl własny kod HTML lub Preact JSX w tej notatce",
+    "setup_create_sample_preact": "Stwórz przykładową notatkę z użyciem Preact",
+    "setup_create_sample_html": "Stwórz przykładową notatkę z użyciem HTML",
+    "setup_sample_created": "Utworzono przykładową notatkę jako notatkę podrzędną.",
+    "disabled_description": "Ta notatka pochodzi z zewnętrznego źródła. Ze względów bezpieczeństwa funkcja ta nie jest domyślnie włączona. Upewnij się, że ufasz źródłu, zanim ją aktywujesz.",
+    "disabled_button_enable": "Włącz renderowanie notatki"
+  },
+  "web_view_setup": {
+    "title": "Utwórz podgląd strony na żywo bezpośrednio w Trilium",
+    "url_placeholder": "Wpisz lub wklej adres strony internetowej, na przykład https://triliumnotes.org",
+    "create_button": "Utwórz widok strony",
+    "invalid_url_title": "Nieprawidłowy adres",
+    "invalid_url_message": "Wprowadź prawidłowy adres strony, na przykład https://triliumnotes.org.",
+    "disabled_description": "Ten widok strony został zaimportowany z zewnętrznego źródła. Aby chronić Cię przed phishingiem lub szkodliwą zawartością, nie jest on ładowany automatycznie. Możesz go włączyć, jeśli ufasz źródłu.",
+    "disabled_button_enable": "Włącz widok strony"
+  },
+  "active_content_badges": {
+    "type_icon_pack": "Pakiet ikon",
+    "type_backend_script": "Skrypt po stronie serwera",
+    "type_frontend_script": "Skrypt po stronie klienta",
+    "type_widget": "Widżet",
+    "type_app_css": "Niestandardowy CSS",
+    "type_render_note": "Renderuj notatkę",
+    "type_web_view": "Widok strony",
+    "type_app_theme": "Własny motyw",
+    "toggle_tooltip_enable_tooltip": "Kliknij, aby włączyć {{type}}.",
+    "toggle_tooltip_disable_tooltip": "Kliknij, aby wyłączyć {{type}}.",
+    "menu_docs": "Otwórz dokumentację",
+    "menu_execute_now": "Uruchom skrypt teraz",
+    "menu_run": "Uruchamiaj automatycznie",
+    "menu_run_disabled": "Ręcznie",
+    "menu_run_backend_startup": "Podczas uruchamiania backendu",
+    "menu_run_hourly": "Co godzinę",
+    "menu_run_daily": "Codziennie",
+    "menu_run_frontend_startup": "Podczas uruchamiania desktopowego frontendu",
+    "menu_run_mobile_startup": "Podczas uruchamiania mobilnego frontendu",
+    "menu_change_to_widget": "Zmień na widżet",
+    "menu_change_to_frontend_script": "Zmień na skrypt frontendowy",
+    "menu_theme_base": "Baza motywu"
+  },
+  "setup_form": {
+    "more_info": "Dowiedz się więcej"
   }
 }

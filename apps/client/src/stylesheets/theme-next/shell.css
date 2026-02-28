@@ -1087,7 +1087,7 @@ body.layout-vertical.electron.platform-darwin .tab-row-container {
     height: var(--tab-height) !important;
 }
 
-.tab-row-widget > * {
+body.layout-vertical .tab-row-widget > * {
     margin-top: calc((var(--tab-bar-height) - var(--tab-height)) / 2);
 }
 

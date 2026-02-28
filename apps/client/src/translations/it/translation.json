@@ -334,6 +334,7 @@
   "electron_context_menu": {
     "cut": "Taglia",
     "copy": "Copia",
+    "copy-as-markdown": "Copia come markdown",
     "paste": "Incolla",
     "copy-link": "Copia collegamento",
     "paste-as-plain-text": "Incolla come testo semplice",

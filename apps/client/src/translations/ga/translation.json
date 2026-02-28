@@ -1808,6 +1808,7 @@
     "add-term-to-dictionary": "Cuir \"{{term}}\" leis an bhfoclóir",
     "cut": "Gearr",
     "copy": "Cóipeáil",
+    "copy-as-markdown": "Cóipeáil mar markdown",
     "copy-link": "Cóipeáil nasc",
     "paste": "Greamaigh",
     "paste-as-plain-text": "Greamaigh mar théacs simplí",

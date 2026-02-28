@@ -1810,6 +1810,7 @@
     "add-term-to-dictionary": "Add \"{{term}}\" to dictionary",
     "cut": "Cut",
     "copy": "Copy",
+    "copy-as-markdown": "Copy as Markdown",
     "copy-link": "Copy link",
     "paste": "Paste",
     "paste-as-plain-text": "Paste as plain text",

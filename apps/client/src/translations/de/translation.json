@@ -1729,6 +1729,7 @@
     "add-term-to-dictionary": "Begriff \"{{term}}\" zum Wörterbuch hinzufügen",
     "cut": "Ausschneiden",
     "copy": "Kopieren",
+    "copy-as-markdown": "Als Markdown kopieren",
     "copy-link": "Link kopieren",
     "paste": "Einfügen",
     "paste-as-plain-text": "Als unformatierten Text einfügen",

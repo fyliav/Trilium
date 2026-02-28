@@ -882,6 +882,7 @@
   "electron_context_menu": {
     "cut": "قص",
     "copy": "نسخ",
+    "copy-as-markdown": "نسخ كـ Markdown",
     "paste": "لصق",
     "copy-link": "نسخ الرابط",
     "add-term-to-dictionary": "اضافة \"{{term}}\" الى القاموس",

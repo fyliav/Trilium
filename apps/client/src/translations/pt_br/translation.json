@@ -1637,6 +1637,7 @@
     "add-term-to-dictionary": "Adicionar \"{{term}}\" ao dicionário",
     "cut": "Cortar",
     "copy": "Copiar",
+    "copy-as-markdown": "Copiar como markdown",
     "copy-link": "Copiar link",
     "paste": "Colar",
     "paste-as-plain-text": "Colar como texto sem formatação",

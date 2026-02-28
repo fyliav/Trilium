@@ -17,6 +17,7 @@
     --spreadHorizontalWrapped-margin-LR: 4px;
 
     color-scheme: var(--tn-theme-style);
+    font-size: 16px;
 }
 
 :root button,
@@ -125,6 +126,12 @@ input[type="color"] {
 
 /* #region Toolbar */
 
+#toolbarContainer select.scaleSelect,
+#toolbarContainer input.pageNumber {
+    height: calc(var(--toolbar-height) - 8px);
+    padding-block: 0;
+}
+
 #toolbarContainer {
     padding-inline: 12px;
 }
@@ -223,11 +230,8 @@ input[type="color"] {
     --button-hover-color: transparent;
     border-radius: 6px;
 
-    select:focus {
-        background: var(--tn-main-background-color);
-    }
-
-    &:hover {
+    &:hover,
+    &:focus-within{
         background-color: var(--tn-hover-item-background-color);
     }
 }
@@ -265,7 +269,7 @@ input[type="color"] {
         color: var(--tn-menu-text-color);
         padding-inline-end: 12px;
         padding-block: 6px;
-        font-size: .9em;
+        font-size: .9rem;
     }
 }
 

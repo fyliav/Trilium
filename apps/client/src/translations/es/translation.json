@@ -1778,6 +1778,7 @@
     "add-term-to-dictionary": "Agregar \"{{term}}\" al diccionario",
     "cut": "Cortar",
     "copy": "Copiar",
+    "copy-as-markdown": "Copiar como markdown",
     "copy-link": "Copiar enlace",
     "paste": "Pegar",
     "paste-as-plain-text": "Pegar como texto plano",

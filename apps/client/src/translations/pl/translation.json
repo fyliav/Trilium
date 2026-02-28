@@ -614,6 +614,7 @@
   "electron_context_menu": {
     "cut": "Wytnij",
     "copy": "Kopiuj",
+    "copy-as-markdown": "Kopiuj jako markdown",
     "copy-link": "Kopiuj link",
     "paste": "Wklej",
     "paste-as-plain-text": "Wklej jako zwykły tekst",

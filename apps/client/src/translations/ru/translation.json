@@ -708,6 +708,7 @@
     "paste": "Вставить",
     "copy-link": "Скопировать ссылку",
     "copy": "Скопировать",
+    "copy-as-markdown": "Копировать как Markdown",
     "cut": "Вырезать",
     "search_online": "Поиск \"{{term}}\" в {{searchEngine}}",
     "add-term-to-dictionary": "Добавить \"{{term}}\" в словарь",

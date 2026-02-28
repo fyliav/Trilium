@@ -72,11 +72,12 @@ For each note of the calendar, the following attributes can be used:
 | `#endDate` | Similar to `startDate`, mentions the end date if the event spans across multiple days. The date is inclusive, so the end day is also considered. The attribute can be missing for single-day events. |
 | `#startTime` | The time the event starts at. If this value is missing, then the event is considered a full-day event. The format is `HH:MM` (hours in 24-hour format and minutes). |
 | `#endTime` | Similar to `startTime`, it mentions the time at which the event ends (in relation with `endDate` if present, or `startDate`). |
+| `#recurrence` | This is an optional CalDAV `RRULE` string that if present, determines whether a task should repeat or not. Note that it does not include the `DTSTART` attribute, which is derived from the `#startDate` and `#startTime` directly. For examples of valid `RRULE` strings see [https://icalendar.org/rrule-tool.html](https://icalendar.org/rrule-tool.html) |
 | `#color` | Displays the event with a specified color (named such as `red`, `gray` or hex such as `#FF0000`). This will also change the color of the note in other places such as the note tree. |
-| `#calendar:color` | **❌️ Removed since v0.100.0. Use** `**#color**` **instead.**   <br>  <br>Similar to `#color`, but applies the color only for the event in the calendar and not for other places such as the note tree. |
+| `#calendar:color` | **❌️ Removed since v0.100.0. Use** `**#color**` **instead.**    <br>  <br>Similar to `#color`, but applies the color only for the event in the calendar and not for other places such as the note tree. |
 | `#iconClass` | If present, the icon of the note will be displayed to the left of the event title. |
 | `#calendar:title` | Changes the title of an event to point to an attribute of the note other than the title, can either a label or a relation (without the `#` or `~` symbol). See _Use-cases_ for more information. |
-| `#calendar:displayedAttributes` | Allows displaying the value of one or more attributes in the calendar like this:        <br>  <br>![](7_Calendar_image.png)       <br>  <br>`#weight="70" #Mood="Good" #calendar:displayedAttributes="weight,Mood"`      <br>  <br>It can also be used with relations, case in which it will display the title of the target note:       <br>  <br>`~assignee=@My assignee #calendar:displayedAttributes="assignee"` |
+| `#calendar:displayedAttributes` | Allows displaying the value of one or more attributes in the calendar like this:         <br>  <br>![](7_Calendar_image.png)        <br>  <br>`#weight="70" #Mood="Good" #calendar:displayedAttributes="weight,Mood"`       <br>  <br>It can also be used with relations, case in which it will display the title of the target note:        <br>  <br>`~assignee=@My assignee #calendar:displayedAttributes="assignee"` |
 | `#calendar:startDate` | Allows using a different label to represent the start date, other than `startDate` (e.g. `expiryDate`). The label name **must not be** prefixed with `#`. If the label is not defined for a note, the default will be used instead. |
 | `#calendar:endDate` | Similar to `#calendar:startDate`, allows changing the attribute which is being used to read the end date. |
 | `#calendar:startTime` | Similar to `#calendar:startDate`, allows changing the attribute which is being used to read the start time. |
@@ -101,6 +102,32 @@ This will result in:
 ![](8_Calendar_image.png)
 
 When not used in a Journal, the calendar is recursive. That is, it will look for events not just in its child notes but also in the children of these child notes.
+
+## Recurrence
+
+The built in calendar view also supports repeating tasks. If a child note of the calendar has a #recurrence label with a valid recurrence, that event will repeat on the calendar according to the recurrence string. 
+
+For example, to make a note repeat on the calendar:
+
+*   Every Day - `#recurrence="FREQ=DAILY;INTERVAL=1"`
+*   Every 3 days - `#recurrence="FREQ=DAILY;INTERVAL=3"`
+*   Every week - `#recurrence="FREQ=WEEKLY;INTERVAL=1"`
+*   Every 2 weeks on Monday, Wednesday and Friday - `#recurrence="FREQ=WEEKLY;INTERVAL=2;BYDAY=MO,WE,FR"`
+*   Every 3 months - `#recurrence="FREQ=MONTHLY;INTERVAL=3"`
+*   Every 2 months on the First Sunday - `#recurrence="FREQ=MONTHLY;INTERVAL=2;BYDAY=1SU"`
+*   Every month on the Last Friday - `#recurrence="FREQ=MONTHLY;INTERVAL=1;BYDAY=-1FR"`
+*   And so on.
+
+For other examples of valid `RRULE` strings see [https://icalendar.org/rrule-tool.html](https://icalendar.org/rrule-tool.html)
+
+Note that the recurrence string does not include the `DTSTART` attribute as defined in the iCAL specifications. This is derived directly from the `startDate` and `startTime` attributes
+
+If you want to override the label the calendar uses to fetch the recurrence string, you can use the `#calendar:recurrence` attribute. For example, you can set `#calendar:recurrence=taskRepeats`. Then you can set your recurrence string like `#taskRepeats="FREQ=DAILY;INTERVAL=1"`
+
+Also note that the recurrence label can be made promoted as with the start and end dates. 
+
+> [!WARNING]
+> If the recurrence string is not valid, a toast will be shown with the note ID and title of the note with the erroneous recurrence message. This note will not be added to the calendar
 
 ## Use-cases
 

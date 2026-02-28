@@ -1810,6 +1810,7 @@
     "add-term-to-dictionary": "\"{{term}}\" को डिक्शनरी में जोड़ें",
     "cut": "कट (Cut)",
     "copy": "कॉपी (Copy)",
+    "copy-as-markdown": "Markdown के रूप में कॉपी करें",
     "copy-link": "लिंक कॉपी करें",
     "paste": "पेस्ट (Paste)",
     "paste-as-plain-text": "प्लेन टेक्स्ट की तरह पेस्ट करें",

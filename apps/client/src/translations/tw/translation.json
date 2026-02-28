@@ -1722,6 +1722,7 @@
     "add-term-to-dictionary": "將 \"{{term}}\" 新增至字典",
     "cut": "剪下",
     "copy": "複製",
+    "copy-as-markdown": "複製為 Markdown",
     "copy-link": "複製連結",
     "paste": "貼上",
     "paste-as-plain-text": "以純文字貼上",

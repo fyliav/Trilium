@@ -3,6 +3,8 @@
 :root {    
     --main-color: var(--tn-main-text-color);
     --body-bg-color: transparent;
+    --outline-color: var(--tn-input-focus-outline-color);
+    --focus-ring-color: var(--tn-input-focus-outline-color);
     --toolbar-border-color: var(--tn-main-border-color);
     --toolbar-icon-bg-color: var(--tn-main-text-color);
     --toolbar-bg-color: transparent;
@@ -34,7 +36,9 @@
 #findbar.doorHanger,
 .doorHangerRight,
 #printServiceDialog,
-:root :is(.annotationEditorLayer :is(.freeTextEditor, .inkEditor, .stampEditor, .highlightEditor, .signatureEditor), .textLayer) .editToolbar {
+:root :is(.annotationEditorLayer :is(.freeTextEditor, .inkEditor, .stampEditor, .highlightEditor, .signatureEditor), .textLayer) .editToolbar,
+#viewerContainer .editToolbar .colorPicker .dropdown,
+#editorUndoBar {
     border: 1px solid var(--tn-dropdown-border-color);
     border-radius: var(--tn-dropdown-border-radius);
     background-color: var(--tn-menu-background-color);
@@ -64,6 +68,8 @@
 :root .colorPicker {
     --hover-outline-color: var(--tn-input-focus-outline-color);
     --selected-outline-color: var(--tn-main-text-color);
+
+    outline-offset: 3px;
 }
 
 /* Text boxes */
@@ -74,6 +80,7 @@ input {
     --input-horizontal-padding: 8px;
 
     border-radius: 4px !important;
+    font-size: .8rem !important;
 
     &:hover {
         --field-bg-color: var(--tn-input-hover-background);
@@ -168,7 +175,7 @@ input {
 
     /* Toggable option buttons */
     .toggleButton.toolbarLabel {
-        --main-color: var(--tn-ck-color-text);
+        --main-color: var(--tn-main-text-color);
         --button-hover-color: var(--tn-hover-item-background-color);
         --toggled-btn-bg-color: var(--tn-ck-editor-toolbar-button-on-background);
         --toggled-btn-color: var(--tn-ck-editor-toolbar-button-on-color);
@@ -223,10 +230,13 @@ input {
     --toggled-btn-color: currentColor;
     --doorhanger-icon-opacity: 1;
     padding: var(--tn-menu-padding-size);
+    width: auto;
+    min-width: 220px;
+    max-width: 400px;
     
     .toolbarButton.labeled {
         color: var(--tn-menu-text-color);
-
+        padding-inline-end: 12px;
         font-size: 13px;
     }
 }
@@ -344,6 +354,52 @@ input {
 
 #viewsManager {
     display: none;
+}
+
+:root :is(.annotationEditorLayer :is(.freeTextEditor, .inkEditor, .stampEditor, .highlightEditor, .signatureEditor), .textLayer) .editToolbar {
+    --editor-toolbar-hover-bg-color: var(--tn-hover-item-background-color);
+    --editor-toolbar-hover-fg-color: var(--tn-hover-item-text-color);
+    --editor-toolbar-hover-outline: transparent;
+
+    padding: 4px;
+
+    .divider {
+        display: none;
+    }
+
+    .buttons {
+        gap: 2px;
+
+        > * {
+            border-radius: 6px !important;
+        }
+
+        .deleteButton::before {
+            background-color: var(--tn-dropdown-item-icon-destructive-color);
+        }
+    }
+}
+
+#viewerContainer .editToolbar .colorPicker .dropdown {
+    padding: 12px 6px;
+
+    &::before {
+        display: block;
+        position: absolute;
+        content: "";
+        inset: 0;
+        border: 1px solid var(--tn-dropdown-border-color);
+        border-radius: var(--tn-dropdown-border-radius);
+        backdrop-filter: var(--tn-dropdown-backdrop-filter);
+        z-index: -1;
+    }
+}
+
+#editorUndoBar {
+    --message-bar-fg-color: var(--tn-main-text-color);
+    --message-bar-icon-color: var(--tn-menu-item-icon-color);
+    --undo-button-border: transparent;
+    padding-inline: 20px;
 }
 
 /* #endregion */

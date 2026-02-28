@@ -198,7 +198,7 @@ function renderFile(entity: FNote | FAttachment, type: string, $renderedContent:
 
     if (type === "pdf") {
         const url = `../../api/${entityType}/${entityId}/open`;
-        const $viewer = $("<div>");
+        const $viewer = $(`<div style="height: 100%">`);
         render(h(PdfViewer, {pdfUrl: url, editable: false}), $viewer.get(0)!);
 
         $content.append($viewer);

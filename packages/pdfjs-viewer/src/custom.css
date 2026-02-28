@@ -3,6 +3,8 @@
 :root {    
     --main-color: var(--tn-main-text-color);
     --body-bg-color: transparent;
+    --outline-color: gray;
+    --focus-ring-color: var(--tn-input-focus-outline-color);
     --toolbar-border-color: var(--tn-main-border-color);
     --toolbar-icon-bg-color: var(--tn-main-text-color);
     --toolbar-bg-color: transparent;
@@ -15,6 +17,7 @@
     --spreadHorizontalWrapped-margin-LR: 4px;
 
     color-scheme: var(--tn-theme-style);
+    font-size: 16px;
 }
 
 :root button,
@@ -26,14 +29,17 @@
 :root #toolbarContainer #toolbarViewer input,
 :root #editorUndoBar,
 :root .dialogButton {
-    font-family: "Inter";
+    font-family: Inter, sans-serif;
 }
 
 #secondaryToolbar,
 #documentPropertiesDialog,
 #findbar.doorHanger,
 .doorHangerRight,
-#printServiceDialog {
+#printServiceDialog,
+:root :is(.annotationEditorLayer :is(.freeTextEditor, .inkEditor, .stampEditor, .highlightEditor, .signatureEditor), .textLayer) .editToolbar,
+#viewerContainer .editToolbar .colorPicker .dropdown,
+#editorUndoBar {
     border: 1px solid var(--tn-dropdown-border-color);
     border-radius: var(--tn-dropdown-border-radius);
     background-color: var(--tn-menu-background-color);
@@ -63,38 +69,170 @@
 :root .colorPicker {
     --hover-outline-color: var(--tn-input-focus-outline-color);
     --selected-outline-color: var(--tn-main-text-color);
+
+    outline-offset: 3px;
+}
+
+/* Text boxes */
+input:not([type]),
+input[type="number"] {
+    --field-border-color: transparent;
+    --field-bg-color: var(--tn-input-background-color);
+    --field-color: var(--tn-input-text-color);
+    --input-horizontal-padding: 8px;
+
+    border-radius: 4px !important;
+    font-size: .85rem !important;
+
+    &:hover {
+        --field-bg-color: var(--tn-input-hover-background);
+        --field-color: var(--tn-input-hover-color);
+    }
+
+    &:focus {
+        border-color: transparent !important;
+        outline: 2px solid var(--tn-input-focus-outline-color);
+        --field-bg-color: var(--tn-input-focus-background);
+        --field-color: var(--tn-input-focus-color);
+    }
+
+    &::placeholder {
+        color: var(--tn-input-placeholder-color)
+    }
+
+    &::selection {
+        background-color: var(--tn-input-selection-background);
+        color: var(--tn-input-selection-text-color);
+    }
+}
+
+input[type="color"] {
+    border: 0;
+    outline: 0;
+    background: transparent;
+    border-radius: 4px;
+
+    &:hover {
+        opacity: .75;
+    }
+
+    &:focus {
+        outline: 2px solid var(--tn-input-focus-outline-color);
+        outline-offset: 2px;
+    }
 }
 
 /* #endregion */
 
 /* #region Toolbar */
 
+#toolbarContainer select.scaleSelect,
+#toolbarContainer input.pageNumber {
+    height: calc(var(--toolbar-height) - 8px);
+    padding-block: 0;
+}
+
+#toolbarContainer {
+    padding-inline: 12px;
+}
+
 .toolbarButton {
+    border-radius: 6px;
+
     &:not(.labeled):active::before {
         transform: scale(.85) !important;
     }
 
     &:hover {
         background: var(--tn-hover-item-background-color);
-        border-radius: 6px;
         color: var(--tn-hover-item-text-color);
     }
 
-    &.toggled::before {
-        color: var(--tn-menu-item-icon-color);
+    &.toggled {
+        /* Icon-only button */
+        &:not(.labeled) {
+            background: var(--tn-ck-editor-toolbar-button-on-background);
+
+            &&::before {
+                background: var(--tn-ck-editor-toolbar-button-on-color);
+            }
+        }
+
+        &::before {
+            color: var(--tn-menu-item-icon-color);
+        }
+    }
+}
+.verticalToolbarSeparator,
+.splitToolbarButtonSeparator {
+    --separator-color: transparent;
+}
+
+.verticalToolbarSeparator {
+    margin-inline: 4px;
+}
+
+:root #findbar {
+    --toolbar-height: 40px;
+
+    padding: 0 4px;
+
+    /* Search input */
+    .loadingInput {
+        margin-inline-end: 8px;
+    }
+
+    /* Search input - no results */
+    #findInputContainer #findInput[data-status="notFound"] {
+        --tn-input-focus-outline-color: var(--tn-dropdown-item-icon-destructive-color);
+        background: inherit;
+    }
+
+    /* Option buttons */
+    .toggleButton.toolbarLabel,
+    .toolbarButton {
+        height: calc(var(--toolbar-height) - 12px);
+        padding-inline: 10px;
+        border-radius: 6px;
+        aspect-ratio: unset;
+    }
+
+    /* Toggable option buttons */
+    .toggleButton.toolbarLabel {
+        --main-color: var(--tn-main-text-color);
+        --button-hover-color: var(--tn-hover-item-background-color);
+        --toggled-btn-bg-color: var(--tn-ck-editor-toolbar-button-on-background);
+        --toggled-btn-color: var(--tn-ck-editor-toolbar-button-on-color);
+    }
+
+    /* Search status text */
+    #findbarMessageContainer #findResultsCount,
+    #findMsg {
+        background-color: transparent;
+        color: var(--tn-main-text-color);
+        opacity: .5;
+    };
+
+    /* Not found message */
+    #findMsg[data-status="notFound"] {
+        color: var(--tn-dropdown-item-icon-destructive-color);
+        opacity: 1;
     }
 }
 
-#findbar {
+#toolbarContainer #toolbarViewer #pageNumber {
+    font-size: 12px;
+    font-weight: 600;
 }
 
 #scaleSelectContainer {
     --dropdown-btn-bg-color: transparent;
-    --button-hover-color: var(--tn-hover-item-background-color);
+    --button-hover-color: transparent;
     border-radius: 6px;
 
-    select:focus {
-        background: var(--tn-main-background-color);
+    &:hover,
+    &:focus-within{
+        background-color: var(--tn-hover-item-background-color);
     }
 }
 
@@ -123,11 +261,15 @@
     --toggled-btn-color: currentColor;
     --doorhanger-icon-opacity: 1;
     padding: var(--tn-menu-padding-size);
+    width: auto;
+    min-width: 220px;
+    max-width: 400px;
     
     .toolbarButton.labeled {
         color: var(--tn-menu-text-color);
-
-        font-size: 13px;
+        padding-inline-end: 12px;
+        padding-block: 6px;
+        font-size: .9rem;
     }
 }
 
@@ -217,6 +359,12 @@
     > .row:has(#linearizedField) {
         display: none;
     }
+
+    #documentPropertiesClose {
+        /* TODO: restyle */
+        border-radius: 6px;
+        cursor: pointer;
+    }
 }
 
 /* #endregion */
@@ -238,6 +386,52 @@
 
 #viewsManager {
     display: none;
+}
+
+:root :is(.annotationEditorLayer :is(.freeTextEditor, .inkEditor, .stampEditor, .highlightEditor, .signatureEditor), .textLayer) .editToolbar {
+    --editor-toolbar-hover-bg-color: var(--tn-hover-item-background-color);
+    --editor-toolbar-hover-fg-color: var(--tn-hover-item-text-color);
+    --editor-toolbar-hover-outline: transparent;
+
+    padding: 4px;
+
+    .divider {
+        display: none;
+    }
+
+    .buttons {
+        gap: 2px;
+
+        > * {
+            border-radius: 6px !important;
+        }
+
+        .deleteButton::before {
+            background-color: var(--tn-dropdown-item-icon-destructive-color);
+        }
+    }
+}
+
+#viewerContainer .editToolbar .colorPicker .dropdown {
+    padding: 12px 6px;
+
+    &::before {
+        display: block;
+        position: absolute;
+        content: "";
+        inset: 0;
+        border: 1px solid var(--tn-dropdown-border-color);
+        border-radius: var(--tn-dropdown-border-radius);
+        backdrop-filter: var(--tn-dropdown-backdrop-filter);
+        z-index: -1;
+    }
+}
+
+#editorUndoBar {
+    --message-bar-fg-color: var(--tn-main-text-color);
+    --message-bar-icon-color: var(--tn-menu-item-icon-color);
+    --undo-button-border: transparent;
+    padding-inline: 20px;
 }
 
 /* #endregion */

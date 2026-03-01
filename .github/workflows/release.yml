@@ -24,6 +24,9 @@ jobs:
           node-version: 24
           cache: 'pnpm'
 
+      - name: Install dependencies
+        run: pnpm install --filter source --frozen-lockfile --ignore-scripts
+
       - name: Check version consistency
         run: pnpm tsx ${{ github.workspace }}/scripts/check-version-consistency.ts ${{ github.ref_name }}
   make-electron:

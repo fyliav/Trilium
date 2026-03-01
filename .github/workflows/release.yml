@@ -28,6 +28,8 @@ jobs:
         run: pnpm tsx ${{ github.workspace }}/scripts/check-version-consistency.ts ${{ github.ref_name }}
   make-electron:
     name: Make Electron
+    needs:
+      - sanity-check
     strategy:
       fail-fast: false
       matrix:
@@ -95,6 +97,8 @@ jobs:
 
   build_server:
     name: Build Linux Server
+    needs:
+      - sanity-check
     strategy:
       fail-fast: false
       matrix:

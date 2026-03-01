@@ -17,6 +17,12 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Set up node & dependencies
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
       - name: Check version consistency
         run: pnpm tsx ${{ github.workspace }}/scripts/check-version-consistency.ts ${{ github.ref_name }}
   make-electron:

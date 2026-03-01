@@ -72,6 +72,13 @@ runs:
       FLATPAK_VERSION='24.08'
       flatpak install --user --no-deps --arch $FLATPAK_ARCH --assumeyes runtime/org.freedesktop.Platform/$FLATPAK_ARCH/$FLATPAK_VERSION runtime/org.freedesktop.Sdk/$FLATPAK_ARCH/$FLATPAK_VERSION org.electronjs.Electron2.BaseApp/$FLATPAK_ARCH/$FLATPAK_VERSION
 
+  - name: Unblock signing
+    if: ${{ inputs.os == 'windows' }}
+    shell: ${{ inputs.shell }}
+    run: |
+      cat ${{ vars.WINDOWS_SIGN_ERROR_LOG }}
+      rm ${{ vars.WINDOWS_SIGN_ERROR_LOG }}
+
   - name: Update build info
     shell: ${{ inputs.shell }}
     run: pnpm run chore:update-build-info

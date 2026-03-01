@@ -81,7 +81,7 @@ jobs:
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGN_KEY }}
 
       - name: Upload the artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: release-desktop-${{ matrix.os.name }}-${{ matrix.arch }}
           path: apps/desktop/upload/*.*
@@ -108,7 +108,7 @@ jobs:
           arch: ${{ matrix.arch }}
 
       - name: Upload the artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: release-server-linux-${{ matrix.arch }}
           path: upload/*.*
@@ -128,7 +128,7 @@ jobs:
             docs/Release Notes
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           merge-multiple: true
           pattern: release-*

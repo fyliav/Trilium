@@ -30,7 +30,7 @@ vi.mock("./copilot_binary.js", () => ({
 
 // The loopback MCP endpoint opens a real socket; stub it to a fixed URL.
 const mcpEndpointMock = vi.hoisted(() => vi.fn(async () => "http://127.0.0.1:12345/mcp-secret"));
-vi.mock("./copilot_mcp_endpoint.js", () => ({ getCopilotMcpEndpointUrl: mcpEndpointMock }));
+vi.mock("./acp_mcp_endpoint.js", () => ({ getAcpMcpEndpointUrl: mcpEndpointMock }));
 
 const buildNoteHintMock = vi.hoisted(() => vi.fn((noteId: string): string | null => `NOTE_META(${noteId})`));
 vi.mock("@triliumnext/core/src/services/llm/note_hint.js", () => ({ buildNoteHint: buildNoteHintMock }));
@@ -119,15 +119,10 @@ class FakeAcpError extends Error {
 
 vi.mock("./acp_client.js", () => ({ AcpClient: FakeAcpClient, AcpError: FakeAcpError }));
 
-const {
-    buildCopilotModelList,
-    buildPromptBlocks,
-    CopilotAgentProvider,
-    createUpdateCollector,
-    decidePermission,
-    resetAgentCwdForTests,
-    resetModelCatalogCacheForTests
-} = await import("./copilot_agent.js");
+const { buildPromptBlocks, createUpdateCollector, denyPermission } = await import("./acp_agent.js");
+const { buildCopilotModelList, CopilotAgentProvider, resetModelCatalogCacheForTests } = await import("./copilot_agent.js");
+
+const decidePermission = (request: Parameters<typeof denyPermission>[0]) => denyPermission(request, "Copilot Agent provider");
 
 async function collect(iterable: AsyncIterable<LlmStreamChunk>): Promise<LlmStreamChunk[]> {
     const chunks: LlmStreamChunk[] = [];
@@ -144,7 +139,6 @@ function resetFakes() {
     errorLogMock.mockReset();
     infoLogMock.mockReset();
     resolveAttachmentPartMock.mockReset();
-    resetAgentCwdForTests();
     resetModelCatalogCacheForTests();
     mcpEndpointMock.mockClear();
     resolveCopilotBinaryMock.mockClear();
@@ -686,7 +680,7 @@ describe("CopilotAgentProvider.generateTitle", () => {
     });
 });
 
-describe("decidePermission (fail-closed)", () => {
+describe("denyPermission (fail-closed)", () => {
     // Note tools are pre-approved via --allow-tool and never reach the callback;
     // anything that does is denied. Payload shapes mirror the real CLI 1.0.71
     // permission request captured live (opaque toolCallId, kind "execute").

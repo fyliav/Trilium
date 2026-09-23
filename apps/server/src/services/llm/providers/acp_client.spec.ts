@@ -53,17 +53,27 @@ describe("AcpClient", () => {
         vi.useRealTimers();
     });
 
-    it("spawns with --acp and the given args", () => {
-        AcpClient.start("/usr/bin/copilot", { cwd: "/tmp", args: ["--no-color"] });
+    it("spawns with exactly the given args and the process environment", () => {
+        AcpClient.start("/usr/bin/copilot", { cwd: "/tmp", args: ["--acp", "--no-color"] });
         expect(spawnMock).toHaveBeenCalledWith(
             "/usr/bin/copilot",
             ["--acp", "--no-color"],
-            expect.objectContaining({ cwd: "/tmp" })
+            expect.objectContaining({ cwd: "/tmp", env: process.env })
         );
+
+        AcpClient.start("/opt/agy/agy_acp_server.par", { cwd: "/tmp" });
+        expect(spawnMock).toHaveBeenLastCalledWith("/opt/agy/agy_acp_server.par", [], expect.anything());
+    });
+
+    it("layers extra environment variables over the process environment", () => {
+        AcpClient.start("/opt/agy/agy_acp_server.par", { cwd: "/tmp", env: { GEMINI_HOME: "/data/home" } });
+        const env = spawnMock.mock.lastCall?.[2]?.env as NodeJS.ProcessEnv | undefined;
+        expect(env?.GEMINI_HOME).toBe("/data/home");
+        expect(env?.PATH).toBe(process.env.PATH);
     });
 
     it("quotes the binary path when launched through a shell", () => {
-        AcpClient.start("C:\\npm\\copilot.cmd", { cwd: "/tmp", shell: true });
+        AcpClient.start("C:\\npm\\copilot.cmd", { cwd: "/tmp", shell: true, args: ["--acp"] });
         expect(spawnMock).toHaveBeenCalledWith(
             `"C:\\npm\\copilot.cmd"`,
             ["--acp"],

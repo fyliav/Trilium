@@ -1,5 +1,6 @@
 /**
- * Private loopback MCP endpoint for the Copilot Agent provider.
+ * Private loopback MCP endpoint for the ACP agent providers (GitHub Copilot, Google
+ * Antigravity).
  *
  * The Claude Agent provider hands its agent an *in-process* MCP server
  * instance over the SDK's stdio control channel. ACP has no such channel —
@@ -30,7 +31,7 @@ let endpointUrl: Promise<string> | undefined;
  * `session/new` MCP config. A failed start is not cached so a later chat
  * turn retries.
  */
-export function getCopilotMcpEndpointUrl(): Promise<string> {
+export function getAcpMcpEndpointUrl(): Promise<string> {
     if (!endpointUrl) {
         endpointUrl = startEndpoint().catch((err: unknown) => {
             endpointUrl = undefined;
@@ -41,7 +42,7 @@ export function getCopilotMcpEndpointUrl(): Promise<string> {
 }
 
 /** For tests: close the listener and forget it so the next call starts fresh. */
-export async function resetCopilotMcpEndpointForTests(): Promise<void> {
+export async function resetAcpMcpEndpointForTests(): Promise<void> {
     if (endpointUrl) {
         const url = await endpointUrl.catch(() => undefined);
         endpointUrl = undefined;
@@ -75,7 +76,7 @@ async function startEndpoint(): Promise<string> {
             // silently — log it instead (and keep a listener attached, since an
             // unhandled "error" event would crash the server).
             server.removeListener("error", onStartupError);
-            server.on("error", err => getLog().error(`Copilot MCP endpoint server error: ${err}`));
+            server.on("error", err => getLog().error(`ACP MCP endpoint server error: ${err}`));
             resolve();
         });
     });
@@ -88,7 +89,7 @@ async function startEndpoint(): Promise<string> {
 
     boundHost = `127.0.0.1:${address.port}`;
     const url = `http://${boundHost}${secretPath}`;
-    getLog().info(`Copilot Agent provider: note-tools MCP endpoint listening on ${boundHost} (loopback only)`);
+    getLog().info(`ACP agent providers: note-tools MCP endpoint listening on ${boundHost} (loopback only)`);
     return url;
 }
 
@@ -125,7 +126,7 @@ async function handleRequest(
         await mcpServer.connect(transport);
         await transport.handleRequest(req, res, body);
     } catch (err) {
-        getLog().error(`Copilot MCP endpoint error: ${err}`);
+        getLog().error(`ACP MCP endpoint error: ${err}`);
         if (!res.headersSent) {
             res.writeHead(500, { "Content-Type": "application/json" }).end(JSON.stringify({ error: "Internal MCP error" }));
         }

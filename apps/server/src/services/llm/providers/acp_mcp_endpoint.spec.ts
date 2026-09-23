@@ -16,8 +16,8 @@ vi.mock("@triliumnext/core", () => ({
 const createMcpServerMock = vi.hoisted(() => vi.fn());
 vi.mock("../../mcp/mcp_server.js", () => ({ createMcpServer: createMcpServerMock }));
 
-const { getCopilotMcpEndpointUrl, resetCopilotMcpEndpointForTests } =
-    await import("./copilot_mcp_endpoint.js");
+const { getAcpMcpEndpointUrl, resetAcpMcpEndpointForTests } =
+    await import("./acp_mcp_endpoint.js");
 
 /** Loopback address, ephemeral port, 128-bit secret path. */
 const ENDPOINT_URL = /^http:\/\/127\.0\.0\.1:\d+\/mcp-[0-9a-f]{32}$/;
@@ -85,7 +85,7 @@ function rawGetWithoutHost(url: string): Promise<string> {
     });
 }
 
-describe("copilot MCP endpoint", () => {
+describe("ACP MCP endpoint", () => {
     let mcpServers: McpServer[];
 
     beforeEach(() => {
@@ -100,24 +100,24 @@ describe("copilot MCP endpoint", () => {
     });
 
     afterEach(async () => {
-        await resetCopilotMcpEndpointForTests();
+        await resetAcpMcpEndpointForTests();
         vi.restoreAllMocks();
     });
 
     it("starts one loopback listener behind an unguessable path and memoizes it", async () => {
         const createServerSpy = vi.spyOn(http, "createServer");
 
-        const url = await getCopilotMcpEndpointUrl();
+        const url = await getAcpMcpEndpointUrl();
         expect(url).toMatch(ENDPOINT_URL);
 
-        await expect(getCopilotMcpEndpointUrl()).resolves.toBe(url);
+        await expect(getAcpMcpEndpointUrl()).resolves.toBe(url);
         expect(createServerSpy).toHaveBeenCalledTimes(1);
         expect(infoLogMock).toHaveBeenCalledTimes(1);
     });
 
     it("logs a post-startup server error instead of taking the process down", async () => {
         const createServerSpy = vi.spyOn(http, "createServer");
-        await getCopilotMcpEndpointUrl();
+        await getAcpMcpEndpointUrl();
 
         // An "error" event with no listener is re-thrown by EventEmitter, which
         // would crash the server — the startup listener must have been replaced.
@@ -130,33 +130,33 @@ describe("copilot MCP endpoint", () => {
         const failing = new UnstartableServer() as unknown as http.Server;
         vi.spyOn(http, "createServer").mockReturnValueOnce(failing);
 
-        await expect(getCopilotMcpEndpointUrl()).rejects.toThrow(/EADDRINUSE/);
-        await expect(getCopilotMcpEndpointUrl()).resolves.toMatch(ENDPOINT_URL);
+        await expect(getAcpMcpEndpointUrl()).rejects.toThrow(/EADDRINUSE/);
+        await expect(getAcpMcpEndpointUrl()).resolves.toMatch(ENDPOINT_URL);
     });
 
     it("survives a reset issued while a start is still in flight", async () => {
         const failing = new UnstartableServer() as unknown as http.Server;
         vi.spyOn(http, "createServer").mockReturnValueOnce(failing);
 
-        const pending = getCopilotMcpEndpointUrl();
-        const reset = resetCopilotMcpEndpointForTests();
+        const pending = getAcpMcpEndpointUrl();
+        const reset = resetAcpMcpEndpointForTests();
 
         await expect(pending).rejects.toThrow(/EADDRINUSE/);
         await expect(reset).resolves.toBeUndefined();
     });
 
     it("closes the listener on reset and hands out a fresh URL afterwards", async () => {
-        const first = await getCopilotMcpEndpointUrl();
+        const first = await getAcpMcpEndpointUrl();
         await expect(request(first)).resolves.toMatchObject({ status: 406 });
 
-        await resetCopilotMcpEndpointForTests();
+        await resetAcpMcpEndpointForTests();
         await expect(request(first)).rejects.toThrow(/ECONNREFUSED/);
 
-        await expect(getCopilotMcpEndpointUrl()).resolves.not.toBe(first);
+        await expect(getAcpMcpEndpointUrl()).resolves.not.toBe(first);
     });
 
     it("404s every path but the secret one, without building an MCP server", async () => {
-        const url = await getCopilotMcpEndpointUrl();
+        const url = await getAcpMcpEndpointUrl();
         const base = url.slice(0, url.lastIndexOf("/"));
 
         await expect(request(`${base}/`)).resolves.toMatchObject({ status: 404 });
@@ -166,7 +166,7 @@ describe("copilot MCP endpoint", () => {
 
     it("answers an MCP handshake and disposes both peers on response close", async () => {
         const transportClose = vi.spyOn(StreamableHTTPServerTransport.prototype, "close");
-        const url = await getCopilotMcpEndpointUrl();
+        const url = await getAcpMcpEndpointUrl();
 
         const res = await request(url, {
             method: "POST",
@@ -194,7 +194,7 @@ describe("copilot MCP endpoint", () => {
     });
 
     it("rejects a rebound Host and lets the bound one through", async () => {
-        const url = await getCopilotMcpEndpointUrl();
+        const url = await getAcpMcpEndpointUrl();
 
         // The allowlist is pinned to the bound address, so a DNS-rebinding
         // attempt is turned away before it reaches the transport. (Derived from
@@ -215,7 +215,7 @@ describe("copilot MCP endpoint", () => {
     });
 
     it("answers 500 when the MCP server cannot be built", async () => {
-        const url = await getCopilotMcpEndpointUrl();
+        const url = await getAcpMcpEndpointUrl();
         createMcpServerMock.mockImplementationOnce(() => {
             throw new Error("becca unavailable");
         });
@@ -227,7 +227,7 @@ describe("copilot MCP endpoint", () => {
     });
 
     it("leaves an already-sent response alone when the transport fails late", async () => {
-        const url = await getCopilotMcpEndpointUrl();
+        const url = await getAcpMcpEndpointUrl();
         // A failure once the transport has started writing must only be logged:
         // a second writeHead() would throw ERR_HTTP_HEADERS_SENT on top of it.
         const handle = vi.spyOn(StreamableHTTPServerTransport.prototype, "handleRequest");
@@ -242,7 +242,7 @@ describe("copilot MCP endpoint", () => {
     });
 
     it("treats an empty body as absent and refuses one over the 4 MB cap", async () => {
-        const url = await getCopilotMcpEndpointUrl();
+        const url = await getAcpMcpEndpointUrl();
 
         // Nothing to parse: the transport is handed no body and reports the
         // JSON-RPC parse error itself.

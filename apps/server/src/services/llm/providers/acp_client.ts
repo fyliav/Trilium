@@ -1,7 +1,7 @@
 /**
  * Minimal Agent Client Protocol (ACP) client: newline-delimited JSON-RPC 2.0
- * over a subprocess's stdio, as spoken by `copilot --acp` (and other ACP
- * agents — see https://agentclientprotocol.com/).
+ * over a subprocess's stdio, as spoken by `copilot --acp`, Google's
+ * `agy_acp_server` and other ACP agents (see https://agentclientprotocol.com/).
  *
  * Deliberately dependency-free and transport-only: protocol semantics
  * (initialize, session/new, session/prompt, permission policy) live in the
@@ -35,8 +35,13 @@ export class AcpError extends Error {
 
 export interface AcpClientOptions {
     cwd: string;
-    /** Extra CLI arguments after `--acp`. */
+    /**
+     * CLI arguments, passed as-is. Each agent names its ACP mode differently
+     * (`copilot --acp`; Google's `agy_acp_server` speaks nothing else).
+     */
     args?: string[];
+    /** Variables set on top of the server's own environment. */
+    env?: Record<string, string>;
     /**
      * Launch through a shell (required for npm `.cmd` shims on Windows). The
      * binary path is quoted by the client when set.
@@ -93,12 +98,12 @@ export class AcpClient {
     static start(binary: string, options: AcpClientOptions): AcpClient {
         const proc = spawn(
             options.shell ? `"${binary}"` : binary,
-            ["--acp", ...(options.args ?? [])],
+            options.args ?? [],
             {
                 cwd: options.cwd,
                 shell: options.shell ?? false,
                 stdio: ["pipe", "pipe", "pipe"],
-                env: process.env
+                env: options.env ? { ...process.env, ...options.env } : process.env
             }
         );
         return new AcpClient(proc, options);

@@ -159,9 +159,8 @@ export class AcpClient {
     /**
      * Reject anything still in flight and end the subprocess: close its stdin so
      * it can exit on its own, and kill it only if it is still running after
-     * {@link DISPOSE_GRACE_MS}. `agy_acp_server` answers SIGTERM with a crash
-     * report of some eighty lines on stderr, which would land in the log once per
-     * chat turn.
+     * {@link DISPOSE_GRACE_MS}. `agy_acp_server` writes a crash report to stderr
+     * when it is killed, and stderr goes to the log.
      */
     dispose(): void {
         if (this.disposed) {

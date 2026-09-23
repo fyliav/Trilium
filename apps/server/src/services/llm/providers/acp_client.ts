@@ -13,6 +13,9 @@ import { getLog } from "@triliumnext/core";
 import { type ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { createInterface } from "readline";
 
+/** How long a disposed agent has to exit on its own before it is killed. */
+const DISPOSE_GRACE_MS = 5_000;
+
 interface JsonRpcMessage {
     jsonrpc: "2.0";
     id?: number | string;
@@ -63,6 +66,7 @@ export class AcpClient {
     private readonly pending = new Map<number, { resolve: (msg: JsonRpcMessage) => void; reject: (err: Error) => void }>();
     private exitError: Error | undefined;
     private disposed = false;
+    private exited = false;
 
     private constructor(
         private readonly proc: ChildProcessWithoutNullStreams,
@@ -87,7 +91,8 @@ export class AcpClient {
 
         proc.on("error", err => this.failAll(new Error(`Failed to start the ACP agent: ${err.message}`)));
         proc.on("exit", (code, sig) => {
-            // A deliberate dispose() kills the subprocess — that exit is expected
+            this.exited = true;
+            // A deliberate dispose() ends the subprocess — that exit is expected
             // and must not surface as an error for in-flight (cancelled) requests.
             if (!this.disposed) {
                 this.failAll(new Error(`The ACP agent exited unexpectedly (${sig ?? `code ${code}`}).`));
@@ -151,14 +156,26 @@ export class AcpClient {
         this.send({ jsonrpc: "2.0", method, params });
     }
 
-    /** Kill the subprocess and reject anything still in flight. */
+    /**
+     * Reject anything still in flight and end the subprocess: close its stdin so
+     * it can exit on its own, and kill it only if it is still running after
+     * {@link DISPOSE_GRACE_MS}. `agy_acp_server` answers SIGTERM with a crash
+     * report of some eighty lines on stderr, which would land in the log once per
+     * chat turn.
+     */
     dispose(): void {
         if (this.disposed) {
             return;
         }
         this.disposed = true;
         this.failAll(new Error("The ACP client was disposed."));
-        this.proc.kill();
+        this.proc.stdin.end();
+        const killTimer = setTimeout(() => {
+            if (!this.exited) {
+                this.proc.kill();
+            }
+        }, DISPOSE_GRACE_MS);
+        killTimer.unref();
     }
 
     private send(message: JsonRpcMessage): void {

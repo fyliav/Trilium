@@ -226,13 +226,29 @@ describe("AcpClient", () => {
             .rejects.toThrow(/Failed to start the ACP agent/);
     });
 
-    it("does not treat a post-dispose exit as an unexpected failure", async () => {
+    it("closes the agent's stdin on dispose and does not treat its exit as an unexpected failure", async () => {
+        vi.useFakeTimers();
         const client = AcpClient.start("/bin/copilot", { cwd: "/tmp" });
         client.dispose();
-        expect(proc.killed).toBe(true);
+        expect(proc.stdin.writableEnded).toBe(true);
+
+        // An agent that exits on end of input is never signalled.
+        proc.emit("exit", 0, null);
+        vi.advanceTimersByTime(60_000);
+        expect(proc.killed).toBe(false);
 
         // A request after disposal fails with the disposal error, not a crash.
         await expect(client.request("initialize", {})).rejects.toThrow(/disposed/);
+    });
+
+    it("kills an agent that is still running after the grace period", () => {
+        vi.useFakeTimers();
+        const client = AcpClient.start("/bin/copilot", { cwd: "/tmp" });
+        client.dispose();
+        vi.advanceTimersByTime(4_999);
+        expect(proc.killed).toBe(false);
+        vi.advanceTimersByTime(1);
+        expect(proc.killed).toBe(true);
     });
 
     it("rejects in-flight requests on dispose and ignores a second dispose", async () => {

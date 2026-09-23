@@ -36,14 +36,18 @@ class FakeAcpClient {
     static lastStart: { binary: string; opts: { args?: string[]; env?: Record<string, string>; cwd: string } } | undefined;
     static signedIn = true;
     static availableModels: unknown[] = [];
+    /** The session/update payloads the agent streams while answering session/prompt. */
+    static promptUpdates: Record<string, unknown>[] = [];
 
     requests: { method: string; params: unknown }[] = [];
     onAgentRequest?: (method: string, params: unknown) => unknown;
+    onNotification?: (method: string, params: unknown) => void;
 
-    static start(binary: string, opts: { args?: string[]; env?: Record<string, string>; cwd: string; onAgentRequest?: (m: string, p: unknown) => unknown }) {
+    static start(binary: string, opts: { args?: string[]; env?: Record<string, string>; cwd: string; onAgentRequest?: (m: string, p: unknown) => unknown; onNotification?: (m: string, p: unknown) => void }) {
         FakeAcpClient.lastStart = { binary, opts };
         FakeAcpClient.current = new FakeAcpClient();
         FakeAcpClient.current.onAgentRequest = opts.onAgentRequest;
+        FakeAcpClient.current.onNotification = opts.onNotification;
         return FakeAcpClient.current;
     }
 
@@ -56,7 +60,12 @@ class FakeAcpClient {
             if (!FakeAcpClient.signedIn) throw SIGN_IN_REQUIRED;
             return { sessionId: "sess-1", models: { currentModelId: "gemini-3.7-flash-high", availableModels: FakeAcpClient.availableModels } } as T;
         }
-        if (method === "session/prompt") return { stopReason: "end_turn" } as T;
+        if (method === "session/prompt") {
+            for (const update of FakeAcpClient.promptUpdates) {
+                this.onNotification?.("session/update", { sessionId: "sess-1", update });
+            }
+            return { stopReason: "end_turn" } as T;
+        }
         return {} as T;
     }
 
@@ -102,6 +111,7 @@ beforeEach(() => {
     FakeAcpClient.lastStart = undefined;
     FakeAcpClient.signedIn = true;
     FakeAcpClient.availableModels = REMOTE_MODELS;
+    FakeAcpClient.promptUpdates = [];
 });
 
 describe("decideAntigravityPermission", () => {
@@ -213,6 +223,31 @@ describe("tool call updates from agy_acp_server", () => {
             { type: "tool_use", toolCallId: "f6b5", toolName: "search_icons", toolInput: { query: "font" } },
             { type: "tool_result", toolCallId: "f6b5", toolName: "search_icons", result: "Search for icons", isError: false }
         ]);
+    });
+});
+
+describe("AntigravityAgentProvider tool calls", () => {
+    // Shapes captured from agy_acp_server 1.1.1.
+    const MCP_DIR = path.join(DATA_DIR, "antigravity-agent", "home", "antigravity-acp", "brain", "06ada25b", "mcp", "trilium");
+    const TOKEN_FILE = path.join(DATA_DIR, "antigravity-agent", "home", "antigravity-acp", "acp_token.json");
+
+    it("hides the agent's reads of its own tool descriptions, and nothing else", async () => {
+        FakeAcpClient.promptUpdates = [
+            // Listing the tool descriptions: hidden, and so is its completion.
+            { sessionUpdate: "tool_call", toolCallId: "06ada25b:2", title: "Running list_directory", kind: "search", status: "in_progress", locations: [{ path: MCP_DIR }], rawInput: { directory_path: MCP_DIR } },
+            { sessionUpdate: "tool_call_update", toolCallId: "06ada25b:2", status: "completed", rawOutput: "List trilium MCP tools" },
+            // Reading one that does not exist, which the agent never completes: hidden, so it cannot end up "stopped".
+            { sessionUpdate: "tool_call", toolCallId: "call_257368", title: "Running view_file", kind: "read", status: "in_progress", rawInput: { AbsolutePath: path.join(MCP_DIR, "instructions.md") } },
+            // Its own sign-in token lives in its home too, and a read of it stays visible.
+            { sessionUpdate: "tool_call", toolCallId: "call_token", title: "Running view_file", kind: "read", status: "in_progress", locations: [{ path: TOKEN_FILE }], rawInput: { AbsolutePath: TOKEN_FILE } },
+            { sessionUpdate: "tool_call_update", toolCallId: "call_token", status: "completed", rawOutput: "Read token" },
+            // A note tool.
+            { sessionUpdate: "tool_call", toolCallId: "cf21", title: "trilium_search_icons", kind: "other", status: "pending", rawInput: { arguments: { query: "font" } }, _meta: { mcp: { tool: "search_icons", server: "trilium" }, is_mcp_tool_call: true } },
+            { sessionUpdate: "tool_call_update", toolCallId: "cf21", status: "completed", rawOutput: "Search icons" }
+        ];
+
+        const chunks = await collect(new AntigravityAgentProvider().chatChunks([{ role: "user", content: "hi" }], { enableNoteTools: true }));
+        expect(chunks.filter(c => c.type === "tool_use" || c.type === "tool_result").map(c => c.toolCallId)).toEqual(["call_token", "call_token", "cf21", "cf21"]);
     });
 });
 

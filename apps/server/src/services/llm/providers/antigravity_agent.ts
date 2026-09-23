@@ -21,7 +21,7 @@ import { existsSync } from "fs";
 import path from "path";
 
 import dataDirs from "../../data_dir.js";
-import { AcpAgentProvider, type AcpLaunchSpec, type AcpNewSessionParams, type AcpPermissionOutcome, type AcpPermissionRequest, type AcpSessionModelState, denyPermission, describeError, NOTE_TOOLS_MCP_SERVER_NAME } from "./acp_agent.js";
+import { AcpAgentProvider, type AcpLaunchSpec, type AcpNewSessionParams, type AcpPermissionOutcome, type AcpPermissionRequest, type AcpSessionModelState, type AcpToolCallUpdate, denyPermission, describeError, NOTE_TOOLS_MCP_SERVER_NAME } from "./acp_agent.js";
 import { type AcpClient, AcpError } from "./acp_client.js";
 import { resolveAntigravityBinaryPath } from "./antigravity_binary.js";
 
@@ -83,7 +83,7 @@ export class AntigravityAgentProvider extends AcpAgentProvider {
             binary,
             // The ACP registry launches the Linux build with an empty `--uid=`.
             args: process.platform === "linux" ? ["--uid="] : [],
-            env: buildAntigravityEnv(path.resolve(dataDirs.TRILIUM_DATA_DIR, "antigravity-agent", "home"))
+            env: buildAntigravityEnv(agentHome())
         };
     }
 
@@ -95,6 +95,16 @@ export class AntigravityAgentProvider extends AcpAgentProvider {
 
     protected decidePermission(request: AcpPermissionRequest): AcpPermissionOutcome {
         return decideAntigravityPermission(request, this.logLabel);
+    }
+
+    /**
+     * The agent writes a description of every MCP tool to
+     * `<home>/antigravity-acp/brain/<session>/mcp/<server>/<tool>.json` and reads
+     * them with its own file tools before calling one. Those reads are how it
+     * looks a tool up, not work on the user's behalf.
+     */
+    protected isInternalToolCall(update: AcpToolCallUpdate): boolean {
+        return isToolDescriptionAccess(update, agentHome());
     }
 
     /**
@@ -170,6 +180,25 @@ export function buildAntigravityModelList(remote: AcpSessionModelState): ModelIn
 }
 
 /**
+ * Whether a built-in tool call only touches the agent's tool descriptions:
+ * every path it names lies under `<home>/antigravity-acp/brain/<session>/mcp/`.
+ * Anything else in the home, such as the sign-in token, does not qualify.
+ */
+export function isToolDescriptionAccess(update: AcpToolCallUpdate, home: string): boolean {
+    if (update._meta && (update._meta as { is_mcp_tool_call?: unknown }).is_mcp_tool_call === true) {
+        return false;
+    }
+    const paths = [
+        ...(update.locations ?? []).map(location => location.path),
+        ...Object.values(typeof update.rawInput === "object" && update.rawInput !== null ? update.rawInput : {})
+    ].filter((value): value is string => typeof value === "string" && path.isAbsolute(value));
+    return paths.length > 0 && paths.every(candidate => {
+        const segments = path.relative(home, path.resolve(candidate)).split(path.sep);
+        return segments[0] === "antigravity-acp" && segments[1] === "brain" && segments[3] === "mcp";
+    });
+}
+
+/**
  * The environment the server runs in. `GEMINI_HOME` gives it a home of
  * Trilium's own. On Linux, `SSL_CERT_FILE` points it at the system CA bundle
  * when nothing else does: the server's bundled Python looks for one at a fixed
@@ -195,6 +224,11 @@ export function buildAntigravityEnv(
 /** The newest low-effort Flash model, which the catalog lists first among its peers. */
 function pickTitleModel(models: ModelInfo[]): string | undefined {
     return models.find(m => /flash-low$/.test(m.id))?.id;
+}
+
+/** The server's home, `GEMINI_HOME`: its sign-in, sessions and tool descriptions. */
+function agentHome(): string {
+    return path.resolve(dataDirs.TRILIUM_DATA_DIR, "antigravity-agent", "home");
 }
 
 function isSignInRequired(error: unknown): boolean {

@@ -70,7 +70,7 @@ class FakeAcpClient {
 
 vi.mock("./acp_client.js", () => ({ AcpClient: FakeAcpClient, AcpError: FakeAcpError }));
 
-const { resetAcpAgentStateForTests } = await import("./acp_agent.js");
+const { createUpdateCollector, resetAcpAgentStateForTests } = await import("./acp_agent.js");
 const { AntigravityAgentProvider, buildAntigravityEnv, buildAntigravityModelList, decideAntigravityPermission } = await import("./antigravity_agent.js");
 const { parseBuildLabel } = await vi.importActual<typeof import("./antigravity_binary.js")>("./antigravity_binary.js");
 
@@ -186,6 +186,33 @@ describe("AntigravityAgentProvider", () => {
         await provider.generateTitle("plan my week");
         expect(FakeAcpClient.current?.requests.find(r => r.method === "session/set_model")?.params).toEqual({ sessionId: "sess-1", modelId: "gemini-3.8-flash-low" });
         expect(provider.recommendedModelIds(await provider.listModels()).size).toBe(5);
+    });
+});
+
+describe("tool call updates from agy_acp_server", () => {
+    it("names an MCP tool call after the tool and unwraps its arguments", () => {
+        const chunks: LlmStreamChunk[] = [];
+        const collector = createUpdateCollector(chunk => chunks.push(chunk));
+        const meta = { mcp: { tool: "search_icons", server: "trilium" }, is_mcp_tool_call: true };
+        collector.onNotification("session/update", {
+            sessionId: "sess-1",
+            update: {
+                sessionUpdate: "tool_call", toolCallId: "f6b5", title: "trilium_search_icons", kind: "other", status: "pending",
+                content: [], rawInput: { arguments: { query: "font" } }, _meta: meta
+            }
+        });
+        collector.onNotification("session/update", {
+            sessionId: "sess-1",
+            update: {
+                sessionUpdate: "tool_call_update", toolCallId: "f6b5", status: "completed",
+                content: [{ content: { text: "Search for icons", type: "text" }, type: "content" }], rawOutput: "Search for icons"
+            }
+        });
+
+        expect(chunks).toEqual([
+            { type: "tool_use", toolCallId: "f6b5", toolName: "search_icons", toolInput: { query: "font" } },
+            { type: "tool_result", toolCallId: "f6b5", toolName: "search_icons", result: "Search for icons", isError: false }
+        ]);
     });
 });
 

@@ -614,13 +614,14 @@ export function createUpdateCollector(emit: (chunk: LlmStreamChunk) => void) {
                     if (!update.toolCallId || toolNamesById.has(update.toolCallId)) {
                         break; // malformed or a re-announcement of a known call
                     }
-                    const toolName = update.title || "tool";
+                    const mcpTool = mcpToolName(update._meta);
+                    const toolName = mcpTool ?? (update.title || "tool");
                     toolNamesById.set(update.toolCallId, toolName);
                     emit({
                         type: "tool_use",
                         toolCallId: update.toolCallId,
                         toolName,
-                        toolInput: (update.rawInput ?? {}) as Record<string, unknown>
+                        toolInput: (mcpTool ? unwrapMcpArguments(update.rawInput) : update.rawInput ?? {}) as Record<string, unknown>
                     });
                     break;
                 }
@@ -749,6 +750,22 @@ function wrapSystemInstructions(systemPrompt: string): string | null {
         return null;
     }
     return `<system_instructions>\n${systemPrompt}\n</system_instructions>`;
+}
+
+/**
+ * The MCP tool behind a tool call, from the `_meta` that `agy_acp_server` sets on
+ * calls to a client-provided MCP server. The call's title is `<server>_<tool>`,
+ * which matches none of the tool labels the chat has.
+ */
+function mcpToolName(meta: unknown): string | undefined {
+    const typed = meta as { is_mcp_tool_call?: unknown; mcp?: { tool?: unknown } } | undefined;
+    return typed?.is_mcp_tool_call === true && typeof typed.mcp?.tool === "string" ? typed.mcp.tool : undefined;
+}
+
+/** An MCP call's arguments, which `agy_acp_server` reports wrapped as `{ arguments: … }`. */
+function unwrapMcpArguments(rawInput: unknown): unknown {
+    const wrapped = rawInput as { arguments?: unknown } | undefined;
+    return wrapped && typeof wrapped.arguments === "object" && wrapped.arguments !== null ? wrapped.arguments : rawInput ?? {};
 }
 
 /** Pull the text out of an update's content block (nested for tool contents). */

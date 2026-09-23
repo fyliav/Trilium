@@ -22,6 +22,7 @@ import openAiCompatibleIcon from "./icons/robot.svg?url";
 
 export const PROVIDER_ICONS: Record<string, string> = {
     anthropic: anthropicIcon,
+    "antigravity-agent": geminiIcon,
     "claude-agent": claudeAgentIcon,
     "copilot-agent": githubCopilotIcon,
     deepseek: deepseekIcon,

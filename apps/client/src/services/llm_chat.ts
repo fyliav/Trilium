@@ -12,6 +12,13 @@ export interface ProviderModelsQuery {
 }
 
 /**
+ * How long the model list can take. Longer than the server's own 5-minute wait
+ * for a Google Antigravity sign-in (`SIGN_IN_TIMEOUT_MS`), which runs inside
+ * this request the first time the models are listed.
+ */
+const PROVIDER_MODELS_TIMEOUT_MS = 6 * 60_000;
+
+/**
  * Fetch the live model list for a provider from its credentials. Used by the
  * model-selection screen while adding or editing a provider — the config need
  * not be saved yet. A server-side failure (e.g. a bad API key) rejects with a
@@ -19,7 +26,7 @@ export interface ProviderModelsQuery {
  */
 export async function fetchProviderModels(query: ProviderModelsQuery): Promise<LlmModelInfo[]> {
     try {
-        const response = await server.post<{ models?: LlmModelInfo[] }>("llm-chat/provider-models", query);
+        const response = await server.postWithTimeout<{ models?: LlmModelInfo[] }>("llm-chat/provider-models", PROVIDER_MODELS_TIMEOUT_MS, query);
         return response.models ?? [];
     } catch (error) {
         throw new Error(serverErrorMessage(error));

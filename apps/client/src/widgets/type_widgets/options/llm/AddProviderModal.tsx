@@ -99,7 +99,7 @@ export interface ProviderType {
  */
 const PROVIDER_GROUPS = [
     { id: "cloud", columns: 2, headingKey: "llm.provider_group_cloud", descriptionKey: "llm.provider_group_cloud_description" },
-    { id: "subscription", columns: 2, headingKey: "llm.provider_group_subscription", descriptionKey: "llm.provider_group_subscription_description" },
+    { id: "subscription", columns: 3, headingKey: "llm.provider_group_subscription", descriptionKey: "llm.provider_group_subscription_description" },
     { id: "local", columns: 2, headingKey: "llm.provider_group_local", descriptionKey: "llm.provider_group_local_description" },
     // Kept apart from the local runtimes: the same card reaches a hosted
     // OpenAI-compatible service (OpenRouter, Groq, …), so neither "no usage cost"
@@ -123,6 +123,9 @@ export const PROVIDER_TYPES: ProviderType[] = [
     // The same arrangement over the GitHub Copilot CLI, driven in its ACP mode;
     // auth belongs to the CLI (`copilot login`).
     { id: "copilot-agent", name: "GitHub Copilot", group: "subscription", defaultBaseUrl: "", iconUrl: PROVIDER_ICONS["copilot-agent"], description: t("llm.provider_desc_copilot_agent"), connectionDescription: t("llm.copilot_agent_description"), beta: true, apiKey: "none", baseUrl: "none", needsHostProcess: true },
+    // Gemini on a Google account through Google's Antigravity ACP server; the server
+    // signs in itself, opening the Google sign-in page the first time models are listed.
+    { id: "antigravity-agent", name: "Google Antigravity", group: "subscription", defaultBaseUrl: "", iconUrl: PROVIDER_ICONS["antigravity-agent"], description: t("llm.provider_desc_antigravity_agent"), connectionDescription: t("llm.antigravity_agent_description"), beta: true, apiKey: "none", baseUrl: "none", needsHostProcess: true },
     // The three self-hosted cards share one server-side provider; they differ only in
     // the endpoint they prefill and the setup hint they show.
     // No blurbs: the group heading already says local/self-hosted, and how to start
